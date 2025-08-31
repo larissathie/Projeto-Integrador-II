@@ -1,2 +1,3 @@
 # Projeto-Integrador-II
-Repositória teste
+
+Repositório para estudos
