@@ -1,0 +1,85 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+  height: 87px;
+  padding: 0 20px;
+  background-color: #13062E;
+  box-sizing: border-box;
+}
+
+.imagem_cabecalho img {
+  width: 40px;
+  height: auto;
+  display: block;
+}
+
+.usuario {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+}
+
+.icone_usuario img {
+  width: 25px;
+  height: auto;
+  cursor: pointer;
+}
+
+.icone_sair img {
+    margin-right: 25px;
+}
+
+.nomeUsuario {
+  color: #fff;
+  font-size: 24px;
+  margin: 0; /* remove espaço extra do <p> */
+  white-space: nowrap; /* evita quebrar nome em 2 linhas */
+  margin-right: 24px;
+}
+
+.containerSejaBemVindo {
+    background-color: #250D48;
+    width: 1310px;
+    height: 293px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 50px;
+    flex-direction: row;
+    border-radius: 20px;
+    color: #fff;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+}
+
+.containerImagem {
+    margin-left: 50px;
+}
+
+.containerTexto {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.containerTexto h1 {
+    margin: 0;
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.containerTexto p {
+    margin: 0;
+    font-size: 26px;
+    line-height: 1;
+}
