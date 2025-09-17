@@ -1,7 +1,7 @@
 html, body {
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    /*overflow: hidden;*/  /* para nao ter scroll na tela */
     position: relative;
 }
 
@@ -82,4 +82,209 @@ header {
     margin: 0;
     font-size: 26px;
     line-height: 1;
+}
+
+  .containers {
+  display: flex;
+  justify-content: center;   /* centraliza tudo no meio */
+  align-items: flex-start;   /* alinha os cards pelo topo */
+  gap: 40px;                 /* espaço entre os cards */
+  margin-top: 50px;          /* afastar do topo, se quiser */
+}
+
+                            /* Container familiares*/
+.container_familiares {
+  display: flex;
+  margin-left: 94px;
+  margin-top: 68px;
+}
+
+.card_acesso {
+  width: 325px;
+  height: 275px;
+  background-color: white; 
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  align-items: center; 
+}
+
+.cadastrar_familiares {
+  display: flex;
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center; 
+  height: 100%; 
+  text-align: center;
+}
+
+.cadastrar_familiares h2 {
+  color: #1C0945;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.cadastrar_familiares img {
+  max-height: 170px;
+  object-fit: contain;
+}
+
+.cadastrar_familiares a {
+  background-color: #1C0945;
+  border-radius: 24px;
+  border-color: #1C0945;
+  color: #fff;
+  width: 267px;
+  padding: 15px 0px; 
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 5px;
+  margin-bottom: 30px;
+}
+
+                              /*Container salao de festas*/
+
+.container_salao_festas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 68px;
+}
+
+.card_festas {
+  width: 325px;
+  height: 275px;
+  background-color: white; 
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  align-items: center; 
+}
+
+.cadastrar_visitantes {
+  display: flex;
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center; 
+  height: 100%; 
+  text-align: center;
+}
+
+.cadastrar_visitantes h2 {
+  color: #1C0945;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.cadastrar_visitantes img {
+  max-height: 170px;
+  object-fit: contain;
+}
+
+.cadastrar_visitantes a {
+  background-color: #1C0945;
+  border-radius: 24px;
+  border-color: #1C0945;
+  color: #fff;
+  width: 267px;
+  padding: 15px 0px; 
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 30px;
+}
+
+                             /*Container churrasqueira*/
+.container_churrasqueira {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 68px;
+}
+
+.card_churrasqueira {
+  width: 325px;
+  height: 275px;
+  background-color: white; 
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  align-items: center; 
+}
+
+.cadastrar_visitantesChurrasqueira {
+  display: flex;
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center; 
+  height: 100%; 
+  text-align: center;
+}
+
+.cadastrar_visitantesChurrasqueira h2 {
+  color: #1C0945;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.cadastrar_visitantesChurrasqueira img {
+  max-height: 170px;
+  object-fit: contain;
+}
+
+.cadastrar_visitantesChurrasqueira a {
+  background-color: #1C0945;
+  border-radius: 24px;
+  border-color: #1C0945;
+  color: #fff;
+  width: 267px;
+  padding: 15px 0px; 
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 30px;
+}
+
+                             /*footer*/
+.rodape {
+  background-color: #13062E;
+  width:auto;
+  max-height: 138px;
+  display: flex;
+  align-items: flex-start;   /* alinha os cards pelo topo */
+  gap: 40px;                 /* espaço entre os cards */
+  margin-top: 50px;
+}
+
+.imagem_rodape img {
+  width: 293.26px;
+  height: 55px;
 }
