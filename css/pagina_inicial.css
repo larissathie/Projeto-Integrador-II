@@ -47,11 +47,12 @@ header {
 
 .containerSejaBemVindo {
     background-color: #250D48;
-    width: 1310px;
+    width: auto;
     height: 293px;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
+    padding: 0 10px;
     padding-left: 50px;
     flex-direction: row;
     border-radius: 20px;
@@ -62,7 +63,7 @@ header {
 }
 
 .containerImagem {
-    margin-left: 50px;
+    margin-left: 20px;
 }
 
 .containerTexto {
@@ -89,13 +90,13 @@ header {
   justify-content: center;   /* centraliza tudo no meio */
   align-items: flex-start;   /* alinha os cards pelo topo */
   gap: 40px;                 /* espaço entre os cards */
-  margin-top: 50px;          /* afastar do topo, se quiser */
+  margin-top: 5px;          /* afastar do topo, se quiser */
 }
 
                             /* Container familiares*/
 .container_familiares {
   display: flex;
-  margin-left: 94px;
+  margin-left: 35px;
   margin-top: 68px;
 }
 
@@ -287,4 +288,27 @@ header {
 .imagem_rodape img {
   width: 293.26px;
   height: 55px;
+  margin-left: 64px;
+  margin-top: 34px;
+}
+
+.dados_rodape {
+  color: #fff;
+  display: flex;
+  margin-top: 10px; 
+  gap: 300px;
+
+}
+.email_rodape {
+  margin-left: 170px;
+  font-size: 20px;
+}
+
+.email_rodape h3 {
+  
+}
+
+.localizacao_rodape {
+  font-size: 20px;
+  font-weight: bold;
 }
