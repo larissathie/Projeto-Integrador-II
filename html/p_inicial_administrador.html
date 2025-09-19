@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/pagina_inicial.css">
+    <title>Página Inicial Admnistrador</title>
+    <link rel="stylesheet" href="/css/p_inicial_admnistrador.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <title>Página Inicial</title>
 </head>
 <body>
-     <header>
+    <header>
 
         <div class="imagem_cabecalho">
             <img src="/imagens/logo_header.png" alt="Logo da empresa Condo Secure" >
@@ -27,23 +27,33 @@
          </div>
 
     </header>
-
+    
     <main>
 
-        <div class="containerSejaBemVindo">
-            <div class="containerImagem">
-                <img src="/imagens/predio_pagina_inicial.png" alt="Prédios com janelas roxas">
+        <div class="containers">
+            <!-- container Cadastrar moradores --> 
+            <div class="container_cadastrar_morador">
+                <div class="card_acesso">
+                    <div class="cadastrar_morador">
+                        <h2>Cadastrar Morador</h2>
+                        <img src="/imagens/icone_cadastrar.png" alt="Imagem simbolizando um usuário sendo cadastrado">
+                        <a href="#">Acessar</a>
+                    </div>
+                </div>
             </div>
-
-            <div class="containerTexto">
-                <h1>Seja bem-vindo ao Portal do Condomínio!</h1>
-                <p>Agende áreas comuns para seus eventos. </p>
-                <p>Cadastre visitantes e mantenha a segurança de todos.</p> 
-                <p>Segurança para você e para todo o condomínio.</p>
+            <!-- Container acessos --> 
+             <div class="container_cadastrar_acessos">
+                <div class="card_acessos">
+                    <div class="cadastrar_acessos">
+                        <h2>Acessos</h2>
+                        <img src="/imagens/icone_acessos.png" alt="Imagem simbolizando uma carta com email">
+                        <a href="#">Acessar</a>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="containers">
+        <div class="containers_embaixo">
             <!-- container Familiares --> 
             <div class="container_familiares">
                 <div class="card_acesso">
@@ -70,14 +80,13 @@
              <div class="container_churrasqueira">
                 <div class="card_churrasqueira">
                     <div class="cadastrar_visitantesChurrasqueira">
-                        <h2>Salão de Festas</h2>
+                        <h2>churrasqueira</h2>
                         <img src="/imagens/icone_churrasqueira.png" alt="Imagem simbolizando duas pessoas em frente a churrasqueira">
                         <a href="#">Acessar</a>
                     </div>
                 </div>
             </div>
         </div>
-
     </main>
 
     <footer>
