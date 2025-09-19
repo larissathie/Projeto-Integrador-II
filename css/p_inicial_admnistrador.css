@@ -45,47 +45,136 @@ header {
   margin-right: 24px;
 }
 
-.containerSejaBemVindo {
-    background-color: #250D48;
-    width: auto;
-    height: 293px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 10px;
-    padding-left: 50px;
-    flex-direction: row;
-    border-radius: 20px;
-    color: #fff;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 50px;
+.containers {
+  display: flex;
+  justify-content: center;   /* centraliza tudo no meio */
+  align-items: flex-start;   /* alinha os cards pelo topo */
+  gap: 40px;                 /* espaço entre os cards */
+  margin-top: 5px;          /* afastar do topo, se quiser */
 }
 
-.containerImagem {
-    margin-left: 20px;
+                          /* Container cadastrar morador*/
+.container_cadastrar_morador {
+  display: flex;
+  margin-left: 35px;
+  margin-top: 68px;
 }
 
-.containerTexto {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+.card_acesso {
+  width: 325px;
+  height: 275px;
+  background-color: white; 
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  align-items: center; 
 }
 
-.containerTexto h1 {
-    margin: 0;
-    font-size: 32px;
-    font-weight: bold;
-    margin-bottom: 20px;
+.cadastrar_morador {
+  display: flex;
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center; 
+  height: 100%; 
+  text-align: center;
 }
 
-.containerTexto p {
-    margin: 0;
-    font-size: 26px;
-    line-height: 1;
+.cadastrar_morador h2 {
+  color: #1C0945;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
 }
 
-  .containers {
+.cadastrar_morador img {
+  max-height: 170px;
+  object-fit: contain;
+}
+
+.cadastrar_morador a {
+  background-color: #1C0945;
+  border-radius: 24px;
+  border-color: #1C0945;
+  color: #fff;
+  width: 267px;
+  padding: 15px 0px; 
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 5px;
+  margin-bottom: 30px;
+}
+
+                          /* Container acessos*/
+.container_cadastrar_acessos {
+  display: flex;
+  margin-left: 35px;
+  margin-top: 68px;
+}
+
+.card_acessos {
+  width: 325px;
+  height: 275px;
+  background-color: white; 
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  align-items: center; 
+}
+
+.cadastrar_acessos {
+  display: flex;
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center; 
+  height: 100%; 
+  text-align: center;
+}
+
+.cadastrar_acessos h2 {
+  color: #1C0945;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.cadastrar_acessos img {
+  max-height: 170px;
+  object-fit: contain;
+}
+
+.cadastrar_acessos a {
+  background-color: #1C0945;
+  border-radius: 24px;
+  border-color: #1C0945;
+  color: #fff;
+  width: 267px;
+  padding: 15px 0px; 
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 5px;
+  margin-bottom: 30px;
+}
+
+                     /* Container embaixo*/
+.containers_embaixo {
   display: flex;
   justify-content: center;   /* centraliza tudo no meio */
   align-items: flex-start;   /* alinha os cards pelo topo */
@@ -215,7 +304,7 @@ header {
 }
 
                              /*Container churrasqueira*/
-.container_churrasqueira {
+.containers_embaixo {
   display: flex;
   align-items: center;
   justify-content: center;
