@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Contato</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo-icon">
+                <img src="Logo-icon.png" alt="Logotipo - Página Inicial">   
+        </div>
+        <nav class="nav-menu">
+            <div class="nav-group-left">
+                <div class="dropdown">
+                    <button class="dropdown-btn">
+                        <img src="Calendario-icon.png" alt="Ícone de Calendário">
+                        <span>Agendamentos</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="/agendamento-novo">Fazer novo agendamento</a>
+                        <a href="/agendamentos-meus">Meus agendamentos</a>
+                    </div>
+                </div>
+
+                <span class="separator">/</span>
+
+                <span class="nav-link usuario-link">
+                    <img src="user-icon.png" alt="Ícone do usuário">
+                    Joao Gilberto
+                </span>
+            </div>
+            <a href="#" class="nav-link">
+                <img src="imagens/icone_sair.png" alt="Ícone de Sair">
+            </a> 
+        </nav>
+    </header>
+        
+    <main class="main-content">
+        <div class="form-container">
+            <div class="form-title"> 
+                <img src="help-desk-icon.png" alt="Ícone de Help Desk">
+               <h1>Entre em Contato</h1>
+            </div> 
+            
+            <form action="#" method="POST" class="contact-form">
+                <div class="form-group">
+                    <label for="nome" class="form-label">Nome Completo</label>
+                    <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" name="email" placeholder="seu.email@exemplo.com" required class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="telefone" class="form-label">Número de Telefone</label>
+                    <input type="tel" id="telefone" name="telefone" placeholder="(XX) XXXXX-XXXX" required class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="mensagem" class="form-label">Mensagem Adicional</label>
+                    <textarea id="mensagem" name="mensagem" rows="4" placeholder="Deixe sua mensagem aqui..." class="form-input"></textarea>
+                </div>
+
+                <div>
+                    <button type="submit" class="submit-button">
+                        Enviar Mensagem
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-allconteudo">
+            <div class="footer-allvertical">
+                <div class="footer-msglogo">
+                    <img src="Logo-icon.png" class="footer-logo-icon" alt="Logotipo Rodapé">
+                    <p>Comdon Secure.</p>
+                </div>
+                <div>
+                    <h3 class="footer-contato">Contato</h3>
+                    <ul class="footer-contatos">
+                        <li><p>grupopiunivespsala6grupo07.com</p></li>
+                        <li><p>(11) 707070-7070</p></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="footer-localizacao">Localização</h3>
+                    <p class="footer-endereco">
+                        Rua Exemplo, 123<br>
+                        Bairro Fictício, São Paulo - SP<br>
+                        CEP: 01234-567
+                    </p>
+                </div>
+            </div>
+        </div>
+        <p class="copyright">&copy; 2025 . Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        // Pega o botão e o conteúdo do dropdown
+        const dropdownBtn = document.querySelector('.dropdown-btn');
+        const dropdownContent = document.querySelector('.dropdown-content');
+
+        // Adiciona um "escutador de evento" que espera por um clique no botão
+        dropdownBtn.addEventListener('click', function() {
+          // A cada clique, ele adiciona ou remove a classe 'show' do conteúdo
+          dropdownContent.classList.toggle('show');
+        });
+
+        // Opcional: Fecha o dropdown se o usuário clicar fora dele
+        window.addEventListener('click', function(event) {
+          // Verifica se o clique NÃO foi no botão
+          if (!dropdownBtn.contains(event.target)) {
+            // Se o menu estiver aberto, fecha ele
+            if (dropdownContent.classList.contains('show')) {
+              dropdownContent.classList.remove('show');
+            }
+          }
+        });
+    </script>
+
+</body>
+</html>
