@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Morador</title>
+    <link rel="stylesheet" href="/css/p_cadastrar_morador.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    
+    <header>
+
+        <div class="imagem_cabecalho">
+            <img src="/imagens/logo_header.png" alt="Logo da empresa Condo Secure" >
+        </div>
+
+        <div class="usuario">
+            <div class="icone_usuario">
+                <img src="/imagens/icone_usuario.png" alt="Ícone de Usuário">
+            </div>
+            <p class="nomeUsuario">João Gilberto</p>
+            <div class="icone_sair">
+                <img src="/imagens/icone_sair.png" alt="Ícone para sair da Página">
+            </div>
+         </div>
+
+    </header>
+
+    <main>
+
+        <div class="cadastrarMorador">
+            <img src="/imagens/icone_cadastrar.png" alt="Ícone representando o cadastro de Usuário">
+            <h1> Cadastrar Morador</h1>
+        </div>
+
+        <div class="container_inputs">
+            <div class="campo_nome">
+                <label for="nome">
+                    <span class="obrigatorio">*</span> Nome completo
+                </label>
+                <input type="text" name="nome" required>
+            </div>
+
+            <div class="campo_cpf">
+                <label for="cpf">
+                    <span class="obrigatorio">*</span> CPF
+                </label>
+                <input type="number" name="cpf" required>
+            </div>
+
+            <div class="campo_email">
+                <label for="email">
+                    <span class="obrigatorio">*</span> Email
+                </label>
+                <input type="email" name="email" required>
+            </div>
+
+            <div class="container_inputs_2">
+            <div class="campo_apartamento">
+                <label for="apartamento">
+                    <span class="obrigatorio">*</span> Número do apartamento
+                </label>
+                <input type="number" name="apartamento" required>
+            </div>
+
+            <div class="campo_tipo_usuario">
+                <label for="usuario">
+                    <span class="obrigatorio">*</span> Tipo de usuário
+                </label>
+                <select name="usuario" required>
+                    <option value="disable select"> Selecione</option>
+                    <option value="Administrador">Administrador</option>
+                    <option value="morador">Morador</option>
+                </select>
+            </div>
+
+            <div class="campo_senha">
+                <label for="senha">
+                    <span class="obrigatorio">*</span> Cadastrar Senha
+                </label>
+                <input type="password" name="senha" required>
+            </div>
+
+
+
+        </div>
+
+    </main>
+
+     
+    
+</body>
+</html>

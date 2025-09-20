@@ -1,0 +1,161 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    /*overflow: hidden;*/  /* para nao ter scroll na tela */
+    position: relative;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+  height: 87px;
+  padding: 0 20px;
+  background-color: #13062E;
+  box-sizing: border-box;
+}
+
+.imagem_cabecalho img {
+  width: 40px;
+  height: auto;
+  display: block;
+}
+
+.usuario {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+}
+
+.icone_usuario img {
+  width: 25px;
+  height: auto;
+  cursor: pointer;
+}
+
+.icone_sair img {
+    margin-right: 25px;
+}
+
+.nomeUsuario {
+  color: #fff;
+  font-size: 24px;
+  margin: 0; /* remove espaço extra do <p> */
+  white-space: nowrap; /* evita quebrar nome em 2 linhas */
+  margin-right: 24px;
+}
+
+.cadastrarMorador {
+    width: auto;
+    max-height: 147px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 50px;
+}
+
+.cadastrarMorador img {
+    max-width: 120px;
+    max-height: 147px;
+}
+
+.cadastrarMorador h1 {
+    color: #250d48;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+.obrigatorio {
+    color: red;
+    margin-left: 4px;
+    font-weight: bold;
+    font-size: 20px;
+    vertical-align: middle;
+}
+
+.container_inputs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 300px;
+}
+
+            /*Campo Nome*/ 
+.campo_nome {
+    flex-direction: column;
+    display: flex;
+    gap: 5px;
+}
+
+.campo_nome label {
+    font-size: 20px;
+}
+
+.campo_nome input {
+    max-width: 453px;
+    height: 25px;
+    border-color: #D9D9D9;
+    border-radius: 5px;
+}
+
+            /*Campo CPF*/ 
+.campo_cpf {
+    flex-direction: column;
+    display: flex;
+    gap: 5px;
+}
+
+.campo_cpf label {
+    font-size: 20px;
+}
+
+.campo_cpf input {
+    max-width: 453px;
+    height: 25px;
+    border-color: #D9D9D9;
+    border-radius: 5px;
+}
+
+            /*Campo Email*/ 
+.campo_email {
+    flex-direction: column;
+    display: flex;
+    gap: 5px;
+}
+
+.campo_email label {
+    font-size: 20px;
+}
+
+.campo_email input {
+    max-width: 453px;
+    height: 25px;
+    border-color: #D9D9D9;
+    border-radius: 5px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
