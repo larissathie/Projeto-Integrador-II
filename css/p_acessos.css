@@ -1,0 +1,269 @@
+/* CSS GERAL */
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #F8F9FA;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex-grow: 1;
+    padding: 20px 40px;
+}
+
+/* --- CABEÇALHO --- */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 87px;
+    padding: 0 20px;
+    background-color: #13062E;
+    box-sizing: border-box;
+    color: white;
+}
+
+.logo-icone img {
+    height: 45px;
+}
+
+.navegacao-menu {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.navegacao-grupo-esquerda {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.menu-suspenso {
+    position: relative;
+}
+
+.botao-menu-suspenso {
+    background: none;
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+        
+.botao-menu-suspenso img {
+    width: 24px;
+}
+
+.conteudo-menu-suspenso {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 5px;
+}
+
+.conteudo-menu-suspenso a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.conteudo-menu-suspenso a:hover {
+    background-color: #f1f1f1;
+}
+
+.conteudo-menu-suspenso.mostrar {
+    display: block;
+}
+        
+.separador {
+    font-size: 20px;
+    color: #ccc;
+}
+        
+.link-navegacao {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.link-navegacao img {
+    width: 24px;
+}
+
+/* --- CONTEÚDO PRINCIPAL --- */
+.titulo-principal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 40px;
+    color: #13062E;
+}
+
+.titulo-principal img {
+    height: 94px;
+}
+        
+.titulo-principal h1 {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.container-filtros {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+        
+.grupo-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.grupo-formulario label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+}
+
+.grupo-formulario input, .grupo-formulario select {
+    padding: 8px 12px;
+    border: 1px solid #CED4DA;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.grupo-formulario input {
+    width: 300px;
+}
+
+.grupo-formulario select {
+    width: 200px;
+}
+        
+.botoes-filtro {
+    display: flex;
+    gap: 10px;
+}
+        
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+        
+.btn-filtrar {
+    background-color: #13062E;
+    color: white;
+}
+        
+.btn-limpar {
+    background-color: #E9ECEF;
+    color: #495057;
+    border: 1px solid #CED4DA;
+}
+        
+.informacao {
+    border: 1px solid #B3D7FF;
+    color: #004085;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.informacao p {
+    margin: 0;
+}
+        
+.tabela-acessos {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+        
+.tabela-acessos th, .tabela-acessos td {
+    border: 1px solid #DEE2E6;
+    padding: 12px 15px;
+    text-align: left;
+    vertical-align: middle;
+}
+        
+.tabela-acessos thead th {
+    background-color: #F8F9FA;
+    font-weight: bold;
+}
+
+/* --- RODAPÉ (RESTAURADO E INTACTO) --- */
+.footer {
+    background-color: #13062E;
+    color: white;
+    padding: 30px 40px;
+}
+
+.footer-allconteudo {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+        
+.footer-allvertical {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+        
+.footer-logo-icon {
+    max-width: 250px;
+}
+        
+.footer-contato, .footer-localizacao {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.footer-contatos, .footer-endereco {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #ccc;
+}
+
+/* --- Responsividade --- */
+@media (min-width: 768px) {
+    .footer-allvertical {
+        grid-template-columns: repeat(3, 1fr); /* Forma flexível de criar 3 colunas */
+        text-align: left;
+        gap: 4rem;
+    }
+
+    .footer-logo-icon {
+        margin: 0; /* Remove margens automáticas no desktop */
+    }
+}
