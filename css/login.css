@@ -63,7 +63,7 @@ nav a {
 .formulario {
     box-sizing: border-box;
     width: 484px;
-    height: 456px;
+    height: auto;
     padding: 20px;
     background-color: #ffff;
     border-radius: 24px;
@@ -106,6 +106,13 @@ nav a {
     outline: none;
     box-shadow: none;
     font-family: "Roboto", sans-serif;
+}
+
+.g-recaptcha {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 .formulario_botao {
