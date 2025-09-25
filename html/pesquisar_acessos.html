@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisar Acessos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/css/p_acessos.css"> 
+
+
+
+
+</head>
+<body>
+
+    <header>
+        <div class="logo-icone">
+            <img src="/imagens/logo_header.png" alt="Logotipo - Página Inicial">
+        </div>
+        <nav class="navegacao-menu">
+            <div class="navegacao-grupo-esquerda">
+                <div class="menu-suspenso">
+                    <button class="botao-menu-suspenso">
+                        <img src="/imagens/icone_calendario.png" alt="Ícone de Calendário">
+                        <span>Agendamentos</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="conteudo-menu-suspenso">
+                        <a href="/agendamento-novo">Fazer novo agendamento</a>
+                        <a href="/agendamentos-meus">Meus agendamentos</a>
+                    </div>
+                </div>
+                <span class="separador">/</span>
+                <span class="link-navegacao link-usuario">
+                    <img src="/imagens/icone_usuario.png" alt="Ícone do usuário">
+                    João Gilberto
+                </span>
+            </div>
+            <a href="#" class="link-navegacao">
+                <img src="/imagens/icone_sair.png" alt="Ícone de Sair">
+            </a>
+        </nav>
+    </header>
+    
+    <main>
+        <div class="titulo-principal">
+           <img src="/imagens/icone_acessos.png" alt="Icone de acessos">
+           <h1>Acessos</h1>
+        </div>
+
+        <div class="container-filtros">
+            <div class="grupo-formulario">
+                <label for="nome">Nome</label>
+                <input type="text" id="nome" name="nome" placeholder="Digite aqui...">
+            </div>
+            <div class="grupo-formulario">
+                <label for="cpf">CPF</label>
+                <input type="text" id="cpf" name="cpf" placeholder="Digite aqui...">
+            </div>
+            <div class="grupo-formulario">
+                <label for="categoria">Categoria</label>
+                <select id="categoria" name="categoria">
+                    <option value="">Selecionar...</option>
+                    <option value="Administrador">Administrador</option>
+                    <option value="Morador">Morador</option>
+                    <option value="Visitante">Visitante</option>
+                </select>
+            </div>
+            <div class="botoes-filtro">
+                <button class="btn btn-filtrar">
+                   <img src="/imagens/icon_acesso_filtro.png" alt=""> 
+                    Filtrar
+                </button>
+                <button class="btn btn-limpar">
+                   <img src="/imagens/icon_acesso_limpa.png" alt="">
+                    Limpar
+                </button>
+            </div>
+        </div>
+
+        <div class="informacao">
+            <p> 
+            <img src="/imagens/icone_informacao.png" alt="Ícone de informação">
+            Visualize a lista de visitantes abaixo, edite, exclua ou cadastre um novo visitante.
+            </p>
+        </div>
+
+        <table class="tabela-acessos">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                    <th>E-mail</th>
+                    <th>Apartamento</th>
+                    <th>Tipo de Usuário</th>
+                    <th>Evento</th>
+                    <th>Data do Evento</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+              
+        </table>
+    </main>
+    
+    <footer class="footer">
+        <div class="footer-allconteudo">
+            <div class="footer-allvertical">
+                <div class="footer-msglogo">
+                    <img src="/imagens/logo_rodape.png" class="footer-logo-icon" alt="Logotipo Rodapé">
+                </div>
+                <div>
+                    <h3 class="footer-contato">Contato</h3>
+                    <ul class="footer-contatos">
+                        <li><p>grupopiunivespsala6grupo07.com</p></li>
+                        <li><p>(11) 707070-7070</p></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="footer-localizacao">Localização</h3>
+                    <p class="footer-endereco">
+                        Rua Exemplo, 123<br>
+                        Bairro Fictício, São Paulo - SP<br>
+                        CEP: 01234-567
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const botaoMenu = document.querySelector('.botao-menu-suspenso');
+        const conteudoMenu = document.querySelector('.conteudo-menu-suspenso');
+
+        botaoMenu.addEventListener('click', function() {
+            conteudoMenu.classList.toggle('mostrar');
+        });
+
+        window.addEventListener('click', function(event) {
+            if (!botaoMenu.contains(event.target)) {
+                if (conteudoMenu.classList.contains('mostrar')) {
+                    conteudoMenu.classList.remove('mostrar');
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
