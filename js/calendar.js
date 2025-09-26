@@ -10,6 +10,7 @@ const updateCalendar = () => {
     const currentMonth = currentDate.getMonth();
 
     const firstDay = new Date(currentYear, currentMonth, 1);
+    console.log(typeof (firstDay));
     const lastDay = new Date(currentYear, currentMonth + 1, 0);
     const totalDays = lastDay.getDate();
     const firstDayIndex = firstDay.getDay();
@@ -27,8 +28,8 @@ const updateCalendar = () => {
 
     for (let i = 1; i <= totalDays; i += 1) {
         const date = new Date(currentYear, currentMonth, i);
-        const todayClass = (date.toDateString() === new Date().toDateString()) ? 'today' : '';
-        datesHTML += `<div class="date active ${todayClass}">${i}</div>`;
+        const todayClass = (date.toDateString() === new Date().toDateString()) ? ' today' : '';
+        datesHTML += `<div class="date${todayClass}" day="${date}">${i}</div>`;
     }
 
     for (let i = 1; i < 7 - lastDayIndex; i += 1) {
@@ -53,22 +54,18 @@ nextBtn.addEventListener('click', () => {
 updateCalendar();
 
 const addClass = (event) => {
-    const activeDays = document.querySelectorAll(".active")
+    const activeDays = document.querySelectorAll(".date")
     activeDays.forEach(day =>
         day.classList.remove('selected')
     )
-    const completeDate = document.getElementById('monthYear');
-    const monthYear = completeDate.innerHTML.split(" ");
-    const year = monthYear[2];
-    const longMonth = monthYear[0];
-    const arrayMonth = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
-    const shortMonth = arrayMonth.indexOf(longMonth);
     const day = event.target.innerHTML;
-    localStorage.setItem('day', `${day}`);
-    localStorage.setItem('longMonth', `${longMonth}`);
-    localStorage.setItem('shortMonth', `${shortMonth}`)
-    localStorage.setItem('year', `${year}`);
-    localStorage.setItem('currentDate', `${new Date(year, shortMonth, day)}`);
+    const dateString = event.target.getAttribute('day');
+    const dateParts = dateString.split(' ');
+    const arrayMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const shortMonth = arrayMonth.indexOf(dateParts[1]);
+    const dateObject = new Date(dateParts[3], shortMonth, dateParts[2]);
+    localStorage.setItem('currentDate', `${dateObject}`);
+    localStorage.setItem('day', `${dateObject.getDate()}`);
     const position = localStorage.getItem('day');
     activeDays[position - 1].classList.add('selected');
 }
