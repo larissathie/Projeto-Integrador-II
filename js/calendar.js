@@ -8,9 +8,7 @@ let currentDate = new Date();
 const updateCalendar = () => {
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth();
-
     const firstDay = new Date(currentYear, currentMonth, 1);
-    console.log(typeof (firstDay));
     const lastDay = new Date(currentYear, currentMonth + 1, 0);
     const totalDays = lastDay.getDate();
     const firstDayIndex = firstDay.getDay();
@@ -18,26 +16,32 @@ const updateCalendar = () => {
     const monthYearString = currentDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
     monthYearElement.textContent = monthYearString;
 
-    let datesHTML = '';
+    const clearBoard = document.querySelector('#dates');
+    removeAllChildNodes(clearBoard);
 
     for (let i = firstDayIndex; i > 0; i -= 1) {
         const prevDate = new Date(currentYear, currentMonth, 1 - i);
-        // datesHTML += `<div class="date inactive">${prevDate.getDate()}</div>`
-        datesHTML += `<div></div>`
+        const newDiv = document.createElement("div");
+        datesElement.appendChild(newDiv);
     }
 
     for (let i = 1; i <= totalDays; i += 1) {
         const date = new Date(currentYear, currentMonth, i);
-        const todayClass = (date.toDateString() === new Date().toDateString()) ? ' today' : '';
-        datesHTML += `<div class="date${todayClass}" day="${date}">${i}</div>`;
+        const newDiv = document.createElement("div");
+        newDiv.setAttribute("class", "date");
+        newDiv.setAttribute("day", date);
+        newDiv.innerHTML = i;
+        newDiv.addEventListener('click', (event) => {
+            unselect();
+            event.target.classList.toggle("selected");
+        });
+        datesElement.appendChild(newDiv);
     }
 
     for (let i = 1; i < 7 - lastDayIndex; i += 1) {
-        const nextDate = new Date(currentYear, currentMonth + 1, i);
-        datesHTML += `<div></div>`;
+        const newDiv = document.createElement("div");
+        datesElement.appendChild(newDiv);
     }
-
-    datesElement.innerHTML = datesHTML;
 
 }
 
@@ -53,21 +57,27 @@ nextBtn.addEventListener('click', () => {
 
 updateCalendar();
 
-const addClass = (event) => {
-    const activeDays = document.querySelectorAll(".date")
-    activeDays.forEach(day =>
-        day.classList.remove('selected')
+const unselect = () => {
+    const selectedDays = [...document.getElementsByClassName("selected")];
+    selectedDays.map(day =>
+        day.classList.remove("selected")
     )
-    const day = event.target.innerHTML;
+}
+
+const saveDate = (event) => {
     const dateString = event.target.getAttribute('day');
     const dateParts = dateString.split(' ');
     const arrayMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const shortMonth = arrayMonth.indexOf(dateParts[1]);
     const dateObject = new Date(dateParts[3], shortMonth, dateParts[2]);
     localStorage.setItem('currentDate', `${dateObject}`);
-    localStorage.setItem('day', `${dateObject.getDate()}`);
-    const position = localStorage.getItem('day');
-    activeDays[position - 1].classList.add('selected');
+    // localStorage.setItem('day', `${dateObject.getDate()}`);
 }
 
-datesElement.addEventListener('click', addClass);
+function removeAllChildNodes(parent) {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+}
+
+datesElement.addEventListener('click', saveDate);
