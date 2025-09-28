@@ -21,6 +21,113 @@ header {
   display: block;
 }
 
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-link {
+    color: white;
+    font-weight: 500;
+    transition: color 300ms;
+}
+
+.nav-link:hover {
+    color: #0450b3;
+}
+
+/* --- Grupo de Navegação Esquerda --- */
+.nav-group-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.separator {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 100;
+    line-height: 1; /* Garante alinhamento vertical */
+    padding: 0 0.25rem; /* Pequeno espaço para não colar */
+}
+
+.usuario-link {
+    cursor: default;
+}
+
+.usuario-link:hover{
+    background-color: transparent;
+    color: white;
+}
+
+/* --- Dropdown --- */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-btn {
+    background-color: transparent;
+    color: white;
+    padding: 10px;
+    font-size: 25px;
+    font-family: inherit;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.dropdown-btn:hover {
+    color: #a3afc7;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #1c0b3d;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    display: block;
+    font-size: 16px;
+}
+
+.dropdown-content a:hover {
+    background-color: #2563eb;
+}
+
+.show {
+    display: block;
+}
+
+.separator {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 100;
+    line-height: 1; /* Garante alinhamento vertical */
+    padding: 0 0.25rem; /* Pequeno espaço para não colar */
+}
+
+/* Ajuste geral para ícones na navegação */
+.nav-menu img {
+    vertical-align: middle; /* Alinha melhor as imagens com o texto */
+}
+
+.nav-link, .usuario-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .usuario {
   display: flex;
   align-items: center;
@@ -180,6 +287,7 @@ header {
   align-items: flex-start;   /* alinha os cards pelo topo */
   gap: 40px;                 /* espaço entre os cards */
   margin-top: 5px;          /* afastar do topo, se quiser */
+  margin-bottom: 50px;
 }
 
                             /* Container familiares*/
@@ -367,11 +475,11 @@ header {
 .rodape {
   background-color: #13062E;
   width:auto;
-  max-height: 138px;
+  height: auto;
   display: flex;
-  align-items: flex-start;   /* alinha os cards pelo topo */
+  align-items: center;   /* alinha os cards pelo topo */
   gap: 40px;                 /* espaço entre os cards */
-  margin-top: 50px;
+  padding: 10px;
 }
 
 .imagem_rodape img {
@@ -385,15 +493,13 @@ header {
   color: #fff;
   display: flex;
   margin-top: 10px; 
-  gap: 300px;
+  gap: 200px;
 
 }
 .email_rodape {
   margin-left: 170px;
   font-size: 20px;
 }
-
-
 
 .localizacao_rodape {
   font-size: 20px;

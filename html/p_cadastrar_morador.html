@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/css/p_cadastrar_morador.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -16,6 +17,22 @@
         <div class="imagem_cabecalho">
             <img src="/imagens/logo_header.png" alt="Logo da empresa Condo Secure" >
         </div>
+
+        <nav class="nav-menu">
+            <div class="nav-group-left">
+                <div class="dropdown">
+                    <button class="dropdown-btn">
+                        <img src="/imagens/icone_calendario.png" alt="Ícone de Calendário">
+                        <span>Agendamentos</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="p_agend_salaoF.html">Salão de Festas</a>
+                        <a href="p_agend_churrasqueira.html">Churrasqueira</a>
+                    </div>
+                </div>
+            
+        <span class="separator">/</span>
 
         <div class="usuario">
             <div class="icone_usuario">
@@ -134,11 +151,35 @@
                 </div>
                 <div class="localizacao_rodape">
                     <p>Localização</p>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1139.5589665586933!2d-46.66968980722495!3d-23.493745474903747!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94cef78887c5c665%3A0x4b758544ce147597!2sRua%20Jos%C3%A9%20Soriano%20de%20Sousa%2C%20292%20-%20Casa%20Verde%20Alta%2C%20S%C3%A3o%20Paulo%20-%20SP%2C%2002555-050!5e1!3m2!1spt-BR!2sbr!4v1758844960400!5m2!1spt-BR!2sbr" width="auto" height="80" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                 </div>
             </div>
         </div>
 
     </footer>
+
+    <script>
+        // Pega o botão e o conteúdo do dropdown
+        const dropdownBtn = document.querySelector('.dropdown-btn');
+        const dropdownContent = document.querySelector('.dropdown-content');
+
+        // Adiciona um "escutador de evento" que espera por um clique no botão
+        dropdownBtn.addEventListener('click', function() {
+          // A cada clique, ele adiciona ou remove a classe 'show' do conteúdo
+          dropdownContent.classList.toggle('show');
+        });
+
+        // Opcional: Fecha o dropdown se o usuário clicar fora dele
+        window.addEventListener('click', function(event) {
+          // Verifica se o clique NÃO foi no botão
+          if (!dropdownBtn.contains(event.target)) {
+            // Se o menu estiver aberto, fecha ele
+            if (dropdownContent.classList.contains('show')) {
+              dropdownContent.classList.remove('show');
+            }
+          }
+        });
+    </script>
 
 </body>
 </html>
