@@ -5,6 +5,19 @@ const nextBtn = document.getElementById('nextBtn');
 
 let currentDate = new Date();
 
+function removeAllChildNodes(parent) {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+}
+
+const unselect = () => {
+    const selectedDays = [...document.querySelectorAll(".selected")];
+    selectedDays.map(day =>
+        day.classList.remove("selected")
+    )
+}
+
 const updateCalendar = () => {
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth();
@@ -13,14 +26,13 @@ const updateCalendar = () => {
     const totalDays = lastDay.getDate();
     const firstDayIndex = firstDay.getDay();
     const lastDayIndex = lastDay.getDay();
+
     const monthYearString = currentDate.toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
     monthYearElement.textContent = monthYearString;
 
-    const clearBoard = document.querySelector('#dates');
-    removeAllChildNodes(clearBoard);
+    removeAllChildNodes(datesElement);
 
     for (let i = firstDayIndex; i > 0; i -= 1) {
-        const prevDate = new Date(currentYear, currentMonth, 1 - i);
         const newDiv = document.createElement("div");
         datesElement.appendChild(newDiv);
     }
@@ -56,28 +68,3 @@ nextBtn.addEventListener('click', () => {
 })
 
 updateCalendar();
-
-const unselect = () => {
-    const selectedDays = [...document.getElementsByClassName("selected")];
-    selectedDays.map(day =>
-        day.classList.remove("selected")
-    )
-}
-
-const saveDate = (event) => {
-    const dateString = event.target.getAttribute('day');
-    const dateParts = dateString.split(' ');
-    const arrayMonth = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const shortMonth = arrayMonth.indexOf(dateParts[1]);
-    const dateObject = new Date(dateParts[3], shortMonth, dateParts[2]);
-    localStorage.setItem('currentDate', `${dateObject}`);
-    // localStorage.setItem('day', `${dateObject.getDate()}`);
-}
-
-function removeAllChildNodes(parent) {
-    while (parent.firstChild) {
-        parent.removeChild(parent.firstChild);
-    }
-}
-
-datesElement.addEventListener('click', saveDate);
