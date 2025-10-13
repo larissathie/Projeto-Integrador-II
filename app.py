@@ -13,6 +13,10 @@ app = Flask(__name__)
 RECAPTCHA_SECRET_KEY = os.getenv('RECAPTCHA_SECRET_KEY')
 GOOGLE_RECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
 
+@app.route('/')
+def index():
+   return render_template('cad_con_churrasqueira.html')
+
 @app.route('/seu-formulario', methods=['GET', 'POST'])
 def handle_form():
     if request.method == 'POST':

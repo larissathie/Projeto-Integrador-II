@@ -3,30 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastrar Familiares</title>
-    <link rel="stylesheet" href="/css/cad_conv_salaoF.css">
+    <title>Agendamento Salão de Festas</title>
+    <link rel="stylesheet" href="/static/css/p_agend_salaoF.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
 
         <div class="imagem_cabecalho">
-            <img src="/imagens/logo_header.png" alt="Logo da empresa Condo Secure" >
+            <img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" >
         </div>
 
          <nav class="nav-menu">
             <div class="nav-group-left">
                 <div class="dropdown">
                     <button class="dropdown-btn">
-                        <img src="/imagens/icone_calendario.png" alt="Ícone de Calendário">
+                        <img src="/static/imagens/icone_calendario.png" alt="Ícone de Calendário">
                         <span>Agendamentos</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div class="dropdown-content">
-                        <a href="p_agend_salaoF.html">Salão de Festas</a>
                         <a href="p_agend_churrasqueira.html">Churrasqueira</a>
                     </div>
                 </div>
@@ -35,69 +34,28 @@
 
         <div class="usuario">
             <div class="icone_usuario">
-                <img src="/imagens/icone_usuario.png" alt="Ícone de Usuário">
+                <img src="/static/imagens/icone_usuario.png" alt="Ícone de Usuário">
             </div>
             <p class="nomeUsuario">João Gilberto</p>
             <div class="icone_sair">
-                <img src="/imagens/icone_sair.png" alt="Ícone para sair da Página">
+                <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
             </div>
          </div>
 
     </header>
     <main>
         <div class="container_primario">
-            <img src="/imagens/icone_salao_festas.png" alt="Ícone representando um salão de festas">
-            <h1>Salão de Festas / Cadastrar Convidados</h1>
+            <img src="/static/imagens/icone_salao_festas.png" alt="Ícone representando um salão de festas">
+            <h1>Salão de Festas </h1>
         </div>
-
-        <div class="container_inputs">
-            <div class="campo_nome">
-                <label for="nome">
-                    <span class="obrigatorio">*</span> Nome completo
-                </label>
-                <input type="text" name="nome" required>
-            </div>
-
-            <div class="campo_cpf">
-                <label for="cpf">
-                    <span class="obrigatorio">*</span> CPF
-                </label>
-                <input type="number" name="cpf" required>
-            </div>
-
-            <div class="botao">
-                <button class="botao_adicionar">Adicionar</button>
-                <button class="botao_cancelar">Cancelar</button>
-            </div>
-        </div>
-
-        <div class="informacao">
-            <p> 
-            <img src="/imagens/icone_informacao.png" alt="Ícone de informação">
-            Visualize a lista de visitantes abaixo, edite, exclua ou cadastre um novo visitante.
-            </p>
-        </div>
-
-        <table class="tabela">
-            <thead class="cabeçalho_tabela">
-                <tr>
-                    <th>Nome</th>
-                    <th>CPF</th>
-                    <th>E-mail</th>
-                    <th>Apartamento</th>
-                    <th>Tipo de Usuário</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-        </table>
 
     </main>
 
-     <footer>
+    <footer>
 
         <div class="rodape">
             <div class="imagem_rodape">
-                <img src="/imagens/logo_rodape.png" alt="Logo da empresa Condo Secure" >
+                <img src="/static/imagens/logo_rodape.png" alt="Logo da empresa Condo Secure" >
             </div>
 
             <div class="dados_rodape">
@@ -136,6 +94,6 @@
           }
         });
     </script>
-    
+
 </body>
 </html>

@@ -3,31 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Página Inicial Admnistrador</title>
-    <link rel="stylesheet" href="/css/p_inicial_admnistrador.css">
+    <link rel="stylesheet" href="/static/css/pagina_inicial.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>Página Inicial</title>
 </head>
 <body>
-    <header>
+     <header>
 
         <div class="imagem_cabecalho">
-            <img src="/imagens/logo_header.png" alt="Logo da empresa Condo Secure" >
+            <img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" >
         </div>
 
-         <nav class="nav-menu">
+        <nav class="nav-menu">
             <div class="nav-group-left">
                 <div class="dropdown">
                     <button class="dropdown-btn">
-                        <img src="/imagens/icone_calendario.png" alt="Ícone de Calendário">
+                        <img src="/static/imagens/icone_calendario.png" alt="Ícone de Calendário">
                         <span>Agendamentos</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div class="dropdown-content">
                         <a href="p_agend_salaoF.html">Salão de Festas</a>
-                        <a href="p_agend_churrasqueira.html">Churrasqueira</a>
+                        <a href="p_agend_churrasqueira.html">churrasqueira</a>
                     </div>
                 </div>
             
@@ -35,48 +35,38 @@
 
         <div class="usuario">
             <div class="icone_usuario">
-                <img src="/imagens/icone_usuario.png" alt="Ícone de Usuário">
+                <img src="/static/imagens/icone_usuario.png" alt="Ícone de Usuário">
             </div>
             <p class="nomeUsuario">João Gilberto</p>
             <div class="icone_sair">
-                <img src="/imagens/icone_sair.png" alt="Ícone para sair da Página">
+                <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
             </div>
          </div>
 
     </header>
-    
+
     <main>
 
-        <div class="containers">
-            <!-- container Cadastrar moradores --> 
-            <div class="container_cadastrar_morador">
-                <div class="card_acesso">
-                    <div class="cadastrar_morador">
-                        <h2>Cadastrar Morador</h2>
-                        <img src="/imagens/icone_cadastrar.png" alt="Imagem simbolizando um usuário sendo cadastrado">
-                        <a href="p_cadastrar_morador.html">Acessar</a>
-                    </div>
-                </div>
+        <div class="containerSejaBemVindo">
+            <div class="containerImagem">
+                <img src="/static/imagens/predio_pagina_inicial.png" alt="Prédios com janelas roxas">
             </div>
-            <!-- Container acessos --> 
-             <div class="container_cadastrar_acessos">
-                <div class="card_acessos">
-                    <div class="cadastrar_acessos">
-                        <h2>Acessos</h2>
-                        <img src="/imagens/icone_acessos.png" alt="Imagem simbolizando uma carta com email">
-                        <a href="pesquisar_acessos.html">Acessar</a>
-                    </div>
-                </div>
+
+            <div class="containerTexto">
+                <h1>Seja bem-vindo ao Portal do Condomínio!</h1>
+                <p>Agende áreas comuns para seus eventos. </p>
+                <p>Cadastre visitantes e mantenha a segurança de todos.</p> 
+                <p>Segurança para você e para todo o condomínio.</p>
             </div>
         </div>
 
-        <div class="containers_embaixo">
+        <div class="containers">
             <!-- container Familiares --> 
             <div class="container_familiares">
                 <div class="card_acesso">
                     <div class="cadastrar_familiares">
                         <h2>Cadastrar Familiares</h2>
-                        <img src="/imagens/icone_familiares.png" alt="Imagem simbolizando uma família">
+                        <img src="/static/imagens/icone_familiares.png" alt="Imagem simbolizando uma família">
                         <a href="p_cadastrar_familiares.html">Acessar</a>
                     </div>
                 </div>
@@ -87,36 +77,37 @@
                 <div class="card_festas">
                     <div class="cadastrar_visitantes">
                         <h2>Salão de Festas</h2>
-                        <img src="/imagens/icone_salao_festas.png" alt="Imagem simbolizando um salão de festas">
+                        <img src="/static/imagens/icone_salao_festas.png" alt="Imagem simbolizando um salão de festas">
                         <a href="p_agend_salaoF.html">Acessar</a>
                     </div>
                 </div>
             </div>
 
-            <!-- container salão de churrasqueira --> 
+            <!-- container churrasqueira --> 
              <div class="container_churrasqueira">
                 <div class="card_churrasqueira">
                     <div class="cadastrar_visitantesChurrasqueira">
-                        <h2>churrasqueira</h2>
-                        <img src="/imagens/icone_churrasqueira.png" alt="Imagem simbolizando duas pessoas em frente a churrasqueira">
+                        <h2>Churrasqueira</h2>
+                        <img src="/static/imagens/icone_churrasqueira.png" alt="Imagem simbolizando duas pessoas em frente a churrasqueira">
                         <a href="p_agend_churrasqueira.html">Acessar</a>
                     </div>
                 </div>
             </div>
         </div>
+
     </main>
 
     <footer>
 
         <div class="rodape">
             <div class="imagem_rodape">
-                <img src="/imagens/logo_rodape.png" alt="Logo da empresa Condo Secure" >
+                <img src="/static/imagens/logo_rodape.png" alt="Logo da empresa Condo Secure" >
             </div>
 
             <div class="dados_rodape">
                 <div class="email_rodape">
                     <h3>Email</h3>
-                    <p>email@univesp.com.br</p>
+                    <p>grupopiunivespsala6grupo07@gmail.com</p>
                 </div>
                 <div class="localizacao_rodape">
                     <p>Localização</p>
