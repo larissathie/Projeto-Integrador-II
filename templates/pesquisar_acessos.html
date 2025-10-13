@@ -11,8 +11,8 @@
 <body>
 
     <header>
-        <div class="logo-icone">
-            <img src="/static/imagens/logo_header.png" alt="Logotipo - Página Inicial">
+        <div class="imagem_cabecalho">
+            <a href="{{ url_for('pagina_inicial') }}"><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
         </div>
         <nav class="navegacao-menu">
             <div class="navegacao-grupo-esquerda">
@@ -23,14 +23,15 @@
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div class="conteudo-menu-suspenso">
-                        <a href="p_agend_salaoF.html">Salão de Festas</a>
-                        <a href="p_agend_churrasqueira.html">Churrasqueira</a>
+                        <a href="{{ url_for('cadastrar_familiares') }}">Cadastrar Familiares</a>   
+                        <a href="{{ url_for('salaoDeFestas') }}">Salão de Festas</a>  
+                        <a href="{{ url_for('churrasqueira') }}">churrasqueira</a>
                     </div>
                 </div>
                 <span class="separador">/</span>
                 <span class="link-navegacao link-usuario">
                     <img src="/static/imagens/icone_usuario.png" alt="Ícone do usuário">
-                    João Gilberto
+                    {{ nome|title if nome else 'Visitante'}}
                 </span>
             </div>
             <a href="#" class="link-navegacao">

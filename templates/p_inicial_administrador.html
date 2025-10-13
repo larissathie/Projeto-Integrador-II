@@ -14,7 +14,7 @@
     <header>
 
         <div class="imagem_cabecalho">
-            <img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" >
+            <a href="{{ url_for('pagina_inicial') }}"><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
         </div>
 
          <nav class="nav-menu">
@@ -26,8 +26,14 @@
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div class="dropdown-content">
+                        <a href="{{ url_for('cadastrar_familiares') }}">Cadastrar Familiares</a>   
+                        <a href="{{ url_for('salaoDeFestas') }}">Salão de Festas</a>  
+                        <a href="{{ url_for('churrasqueira') }}">churrasqueira</a>
+                        <!--
                         <a href="p_agend_salaoF.html">Salão de Festas</a>
-                        <a href="p_agend_churrasqueira.html">Churrasqueira</a>
+                        <a href="p_agend_churrasqueira.html">churrasqueira</a>
+                        -->
+                    </div>
                     </div>
                 </div>
             
@@ -37,7 +43,7 @@
             <div class="icone_usuario">
                 <img src="/static/imagens/icone_usuario.png" alt="Ícone de Usuário">
             </div>
-            <p class="nomeUsuario">João Gilberto</p>
+            <p class="nomeUsuario">{{ nome|title if nome else 'Visitante'}}</p>
             <div class="icone_sair">
                 <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
             </div>

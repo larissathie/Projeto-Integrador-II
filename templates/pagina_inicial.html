@@ -14,7 +14,7 @@
      <header>
 
         <div class="imagem_cabecalho">
-            <img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" >
+            <a href="{{ url_for('pagina_inicial') }}">><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
         </div>
 
         <nav class="nav-menu">
@@ -26,8 +26,9 @@
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div class="dropdown-content">
-                        <a href="p_agend_salaoF.html">Salão de Festas</a>
-                        <a href="p_agend_churrasqueira.html">churrasqueira</a>
+                        <a href="{{ url_for('cadastrar_familiares') }}">Cadastrar Familiares</a>   
+                        <a href="{{ url_for('salaoDeFestas') }}">Salão de Festas</a>  
+                        <a href="{{ url_for('churrasqueira') }}">churrasqueira</a>                       
                     </div>
                 </div>
             
@@ -37,7 +38,7 @@
             <div class="icone_usuario">
                 <img src="/static/imagens/icone_usuario.png" alt="Ícone de Usuário">
             </div>
-            <p class="nomeUsuario">João Gilberto</p>
+            <p class="nomeUsuario">{{ nome|title if nome else 'Visitante'}}</p>
             <div class="icone_sair">
                 <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
             </div>
@@ -46,7 +47,6 @@
     </header>
 
     <main>
-
         <div class="containerSejaBemVindo">
             <div class="containerImagem">
                 <img src="/static/imagens/predio_pagina_inicial.png" alt="Prédios com janelas roxas">
@@ -67,7 +67,7 @@
                     <div class="cadastrar_familiares">
                         <h2>Cadastrar Familiares</h2>
                         <img src="/static/imagens/icone_familiares.png" alt="Imagem simbolizando uma família">
-                        <a href="p_cadastrar_familiares.html">Acessar</a>
+                        <a href="{{ url_for('cadastrar_familiares') }}">Acessar</a>                       
                     </div>
                 </div>
             </div>
@@ -78,18 +78,19 @@
                     <div class="cadastrar_visitantes">
                         <h2>Salão de Festas</h2>
                         <img src="/static/imagens/icone_salao_festas.png" alt="Imagem simbolizando um salão de festas">
-                        <a href="p_agend_salaoF.html">Acessar</a>
+                        <a href="{{ url_for('salaoDeFestas') }}">Acessar</a>  
+                       <!-- <a href="p_agend_salaoF.html">Acessar</a>-->
                     </div>
                 </div>
             </div>
-
             <!-- container churrasqueira --> 
              <div class="container_churrasqueira">
                 <div class="card_churrasqueira">
                     <div class="cadastrar_visitantesChurrasqueira">
                         <h2>Churrasqueira</h2>
                         <img src="/static/imagens/icone_churrasqueira.png" alt="Imagem simbolizando duas pessoas em frente a churrasqueira">
-                        <a href="p_agend_churrasqueira.html">Acessar</a>
+                        <a href="{{ url_for('churrasqueira') }}">Acessar</a> 
+                       <!-- <a href="p_agend_churrasqueira.html">Acessar</a> --> 
                     </div>
                 </div>
             </div>
