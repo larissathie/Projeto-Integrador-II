@@ -3,31 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastrar Familiares</title>
-    <link rel="stylesheet" href="/css/cad_conv_salaoF.css">
+    <title>Cadastrar Morador</title>
+    <link rel="stylesheet" href="/static/css/p_cadastrar_morador.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
+    
     <header>
 
         <div class="imagem_cabecalho">
-            <img src="/imagens/logo_header.png" alt="Logo da empresa Condo Secure" >
+            <a href="{{ url_for('pagina_inicial') }}"><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
         </div>
 
-         <nav class="nav-menu">
+        <nav class="nav-menu">
             <div class="nav-group-left">
                 <div class="dropdown">
                     <button class="dropdown-btn">
-                        <img src="/imagens/icone_calendario.png" alt="Ícone de Calendário">
+                        <img src="/static/imagens/icone_calendario.png" alt="Ícone de Calendário">
                         <span>Agendamentos</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div class="dropdown-content">
+                        <a href="{{ url_for('cadastrar_familiares') }}">Cadastrar Familiares</a>   
+                        <a href="{{ url_for('salaoDeFestas') }}">Salão de Festas</a>  
+                        <a href="{{ url_for('churrasqueira') }}">churrasqueira</a>
+                        <!--
                         <a href="p_agend_salaoF.html">Salão de Festas</a>
-                        <a href="p_agend_churrasqueira.html">Churrasqueira</a>
+                        <a href="p_agend_churrasqueira.html">churrasqueira</a>
+                        -->
+                    </div>
                     </div>
                 </div>
             
@@ -35,19 +42,21 @@
 
         <div class="usuario">
             <div class="icone_usuario">
-                <img src="/imagens/icone_usuario.png" alt="Ícone de Usuário">
+                <img src="/static/imagens/icone_usuario.png" alt="Ícone de Usuário">
             </div>
-            <p class="nomeUsuario">João Gilberto</p>
+            <p class="nomeUsuario">{{ nome|title if nome else 'Visitante'}}</p>
             <div class="icone_sair">
-                <img src="/imagens/icone_sair.png" alt="Ícone para sair da Página">
+                <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
             </div>
          </div>
 
     </header>
+
     <main>
-        <div class="container_primario">
-            <img src="/imagens/icone_salao_festas.png" alt="Ícone representando um salão de festas">
-            <h1>Salão de Festas / Cadastrar Convidados</h1>
+
+        <div class="cadastrarMorador">
+            <img src="/static/imagens/icone_cadastrar.png" alt="Ícone representando o cadastro de Usuário">
+            <h1> Cadastrar Morador</h1>
         </div>
 
         <div class="container_inputs">
@@ -65,18 +74,54 @@
                 <input type="number" name="cpf" required>
             </div>
 
+            <div class="campo_email">
+                <label for="email">
+                    <span class="obrigatorio">*</span> Email
+                </label>
+                <input type="email" name="email" required>
+            </div>
+        </div>
+
+        <div class="container_inputs_2">
+            <div class="campo_apartamento">
+                <label for="apartamento">
+                    <span class="obrigatorio">*</span> Número do apartamento
+                </label>
+                <input type="number" name="apartamento" required>
+            </div>
+
+            <div class="campo_tipo_usuario">
+                <label for="usuario">
+                    <span class="obrigatorio">*</span> Tipo de usuário
+                </label>
+                <select name="usuario" required>
+                    <option value="disable select"> Selecione</option>
+                    <option value="Administrador">Administrador</option>
+                    <option value="morador">Morador</option>
+                </select>
+            </div>
+
+            <div class="campo_senha">
+                <label for="senha">
+                    <span class="obrigatorio">*</span> Cadastrar Senha
+                </label>
+                <input type="password" name="senha" required>
+            </div>
+        </div>
+        <div class="container_3">
+            <div class="informacao">
+                <p> 
+                <img src="/static/imagens/icone_informacao.png" alt="Ícone de informação">
+                Visualize abaixo a lista de usuários cadastrados
+                </p>
+            </div>
             <div class="botao">
                 <button class="botao_adicionar">Adicionar</button>
                 <button class="botao_cancelar">Cancelar</button>
             </div>
         </div>
-
-        <div class="informacao">
-            <p> 
-            <img src="/imagens/icone_informacao.png" alt="Ícone de informação">
-            Visualize a lista de visitantes abaixo, edite, exclua ou cadastre um novo visitante.
-            </p>
-        </div>
+        
+        
 
         <table class="tabela">
             <thead class="cabeçalho_tabela">
@@ -90,14 +135,19 @@
                 </tr>
             </thead>
         </table>
+        <tbody>
+            <!--As proximas linhas virão aqui-->
+           
+        </tbody>
+
 
     </main>
 
-     <footer>
+    <footer>
 
         <div class="rodape">
             <div class="imagem_rodape">
-                <img src="/imagens/logo_rodape.png" alt="Logo da empresa Condo Secure" >
+                <img src="/static/imagens/logo_rodape.png" alt="Logo da empresa Condo Secure" >
             </div>
 
             <div class="dados_rodape">
@@ -136,6 +186,6 @@
           }
         });
     </script>
-    
+
 </body>
 </html>

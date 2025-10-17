@@ -5,43 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pesquisar Acessos</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="/css/p_acessos.css">
+    <link rel="stylesheet" href="/static/css/p_acessos.css">
 
 </head>
 <body>
 
     <header>
-        <div class="logo-icone">
-            <img src="/imagens/logo_header.png" alt="Logotipo - Página Inicial">
+        <div class="imagem_cabecalho">
+            <a href="{{ url_for('pagina_inicial') }}"><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
         </div>
         <nav class="navegacao-menu">
             <div class="navegacao-grupo-esquerda">
                 <div class="menu-suspenso">
                     <button class="botao-menu-suspenso">
-                        <img src="/imagens/icone_calendario.png" alt="Ícone de Calendário">
+                        <img src="/static/imagens/icone_calendario.png" alt="Ícone de Calendário">
                         <span>Agendamentos</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div class="conteudo-menu-suspenso">
-                        <a href="p_agend_salaoF.html">Salão de Festas</a>
-                        <a href="p_agend_churrasqueira.html">Churrasqueira</a>
+                        <a href="{{ url_for('cadastrar_familiares') }}">Cadastrar Familiares</a>   
+                        <a href="{{ url_for('salaoDeFestas') }}">Salão de Festas</a>  
+                        <a href="{{ url_for('churrasqueira') }}">churrasqueira</a>
                     </div>
                 </div>
                 <span class="separador">/</span>
                 <span class="link-navegacao link-usuario">
-                    <img src="/imagens/icone_usuario.png" alt="Ícone do usuário">
-                    João Gilberto
+                    <img src="/static/imagens/icone_usuario.png" alt="Ícone do usuário">
+                    {{ nome|title if nome else 'Visitante'}}
                 </span>
             </div>
             <a href="#" class="link-navegacao">
-                <img src="/imagens/icone_sair.png" alt="Ícone de Sair">
+                <img src="/static/imagens/icone_sair.png" alt="Ícone de Sair">
             </a>
         </nav>
     </header>
     
     <main>
         <div class="titulo-principal">
-           <img src="/imagens/icone_acessos.png" alt="Icone de acessos">
+           <img src="/static/imagens/icone_acessos.png" alt="Icone de acessos">
            <h1>Acessos</h1>
         </div>
 
@@ -65,11 +66,11 @@
             </div>
             <div class="botoes-filtro">
                 <button class="btn btn-filtrar">
-                   <img src="/imagens/icon_acesso_filtro.png" alt=""> 
+                   <img src="/static/imagens/icon_acesso_filtro.png" alt=""> 
                     Filtrar
                 </button>
                 <button class="btn btn-limpar">
-                   <img src="/imagens/icon_acesso_limpa.png" alt="">
+                   <img src="/static/imagens/icon_acesso_limpa.png" alt="">
                     Limpar
                 </button>
             </div>
@@ -77,7 +78,7 @@
 
         <div class="informacao">
             <p> 
-            <img src="/imagens/icone_informacao.png" alt="Ícone de informação">
+            <img src="/static/imagens/icone_informacao.png" alt="Ícone de informação">
             Visualize a lista de visitantes abaixo, edite, exclua ou cadastre um novo visitante.
             </p>
         </div>
@@ -102,7 +103,7 @@
     <footer class="footer">
        <div class="rodape">
             <div class="imagem_rodape">
-                <img src="/imagens/logo_rodape.png" alt="Logo da empresa Condo Secure" >
+                <img src="/static/imagens/logo_rodape.png" alt="Logo da empresa Condo Secure" >
             </div>
 
             <div class="dados_rodape">

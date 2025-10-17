@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <!--
     <link rel="stylesheet" href="/css/login.css">
+    -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -12,24 +15,22 @@
 <body>
     <header>
         <div class="imagem_cabecalho">
-            <img src="/imagens/logo_header.png" alt="Logo da empresa Condo Secure" >
+            <img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" >
         </div>
+        
         <nav>
             <!-- <a href="#" class="link_administrador">Administrador</a> -->
-            <a href="pagina_ajuda.html" class="link_ajuda">Ajuda</a>
+            <a href="{{ url_for('pagAjuda') }}" class="link_ajuda">Ajuda</a>
         </nav>
     </header>
-
     <main>
 
         <div class="plano_de_fundo"> 
             <!-- <img src="/imagens/estrelas_dois.png" alt="Imagem de estrelas brancas" class="fundo_estrelas">
             <img src="/imagens/predios.png " alt="Imagem de Prédios" class="fundo_predios"> -->
                 <div class="formulario">
-                    <form action="#" method="post">
-
-                        <img src="/imagens/logo_formulario.png" alt="Logo da empresa">
-
+                    <form method="POST" action="/login" >
+                        <img src="/static/imagens/logo_formulario.png" alt="Logo da empresa">
                         <div class="formulario_login_senha">
                             <label for="username">Login </label>
                             <input type="text" id="email_usuario" name="nomeUsuario" placeholder="Insira seu email" required>
@@ -39,12 +40,10 @@
                             <label for="password">Senha </label>
                             <input type="password" id="senha_usuario" name="senhaUsuario" placeholder="Digite a sua senha" required>
                         </div>
-
                         <div class="g-recaptcha" data-sitekey="6Lc8SdQrAAAAANjRoYLnJ2gT_MiLONCL3ye1bkTW"></div>
-
                         <div class="formulario_botao">
-                            <button type="submit" class="formulario_botao_acessar">Acessar </button>
-                            <button type="submit" class="formulario_botao_esqueci"> Esqueci minha senha</button>
+                            <button type="submit" class="formulario_botao_acessar">Acessar</button>
+                           <!-- <button type="submit" class="formulario_botao_esqueci"> Esqueci minha senha</button>-->
                         </div>
 
                     </form>
