@@ -46,7 +46,9 @@
             </div>
             <p class="nomeUsuario">{{ nome|title if nome else 'Visitante'}}</p>
             <div class="icone_sair">
-                <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
+                <a href="{{ url_for('logout') }}" title="Sair">
+                    <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
+                </a>
             </div>
          </div>
 

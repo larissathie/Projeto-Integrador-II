@@ -14,7 +14,9 @@
      <header>
 
         <div class="imagem_cabecalho">
-            <a href="{{ url_for('pagina_inicial') }}">><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
+            <a href="{{ url_for('pagina_inicial') }}">
+                 <img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" >
+            </a>
         </div>
 
         <nav class="nav-menu">
@@ -40,8 +42,11 @@
             </div>
             <p class="nomeUsuario">{{ nome|title if nome else 'Visitante'}}</p>
             <div class="icone_sair">
-                <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
+                <a href="{{ url_for('logout') }}" title="Sair">
+                    <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
+                </a>
             </div>
+
          </div>
 
     </header>

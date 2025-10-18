@@ -34,9 +34,11 @@
                     {{ nome|title if nome else 'Visitante'}}
                 </span>
             </div>
-            <a href="#" class="link-navegacao">
-                <img src="/static/imagens/icone_sair.png" alt="Ícone de Sair">
-            </a>
+            <div class="icone_sair">
+                <a href="{{ url_for('logout') }}" title="Sair">
+                    <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
+                </a>
+            </div>
         </nav>
     </header>
     

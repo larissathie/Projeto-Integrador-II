@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request,url_for,flash,redirect
+from flask import Flask, render_template, request,url_for,flash, session, redirect, url_for
 import os, datetime
 import requests
 import sqlite3
@@ -181,6 +181,12 @@ def handle_form():
                 return "Erro na validação do reCAPTCHA. Tente novamente."
         return "Token reCAPTCHA não recebido."
     return render_template('seu_formulario.html') # Renderiza o formulário
+
+# Rota para sair da página
+@app.route('/logout')
+def logout():
+    session.clear()  # limpa a sessão do usuário
+    return redirect(url_for('index'))  # volta para a tela de login (que está na rota '/')
 
 
 
