@@ -68,3 +68,36 @@ nextBtn.addEventListener('click', () => {
 })
 
 updateCalendar();
+
+const btnReservar = document.getElementById('btnReservar');
+const popupReserva = document.getElementById('popupReserva');
+const confirmarReserva = document.getElementById('confirmarReserva');
+const cancelarReserva = document.getElementById('cancelarReserva');
+const mensagemReserva = document.getElementById('mensagemReserva');
+
+// Função para abrir o popup se tiver uma data selecionada
+btnReservar.addEventListener('click', () => {
+    const selectedDay = document.querySelector('.selected');
+    if (!selectedDay) {
+        alert('Selecione uma data antes de reservar!');
+        return;
+    }
+
+    const dataSelecionada = selectedDay.getAttribute('day');
+    const dataFormatada = new Date(dataSelecionada).toLocaleDateString('pt-BR');
+
+    mensagemReserva.textContent = `Deseja confirmar a reserva para o dia ${dataFormatada}?`;
+    popupReserva.style.display = 'flex';
+});
+
+// Confirmar reserva
+confirmarReserva.addEventListener('click', () => {
+    popupReserva.style.display = 'none';
+    alert('Reserva confirmada com sucesso!');
+    // Aqui depois você pode enviar a data pro backend (Flask) via fetch/AJAX
+});
+
+// Cancelar reserva
+cancelarReserva.addEventListener('click', () => {
+    popupReserva.style.display = 'none';
+});
