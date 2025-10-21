@@ -169,7 +169,6 @@ header {
     font-size: 18px; 
 }
 
-/* Se você optou pela Opção 2 (usando <img>) - ajuste as imagens */
 .status-reservado-disponivel img {
     width: 10px;
     height: 10px;
@@ -183,7 +182,7 @@ header {
 }
 
 .selected {
-    background: green;
+    background: blue;
     color: #FFF;
 }
 
@@ -192,7 +191,7 @@ header {
 }
 
 .date:hover {
-    background: #FF5869;
+    background: blue;
     color: #FFF;
 }
 
