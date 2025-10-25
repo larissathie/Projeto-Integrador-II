@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agendamento Salão de Festas</title>
     <link rel="stylesheet" href="/static/css/p_agend_salaoF.css">
+    <link rel="stylesheet" href="/static/css/calendar.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -27,8 +28,8 @@
                     </button>
                     <div class="dropdown-content">
                         <a href="{{ url_for('cadastrar_familiares') }}">Cadastrar Familiares</a>   
-                        <a href="{{ url_for('salaoDeFestas') }}">Salão de Festas</a>  
-                        <a href="{{ url_for('churrasqueira') }}">churrasqueira</a>
+                        <a href="{{ url_for('CadEventoSalao') }}">Salão de Festas</a>  
+                        <a href="{{ url_for('cadEventoChurras') }}">churrasqueira</a>
                         <!--
                         <a href="p_agend_salaoF.html">Salão de Festas</a>
                         <a href="p_agend_churrasqueira.html">churrasqueira</a>
@@ -45,7 +46,9 @@
             </div>
             <p class="nomeUsuario">{{ nome|title if nome else 'Visitante'}}</p>
             <div class="icone_sair">
-                <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
+                <a href="{{ url_for('logout') }}" title="Sair">
+                    <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
+                </a>
             </div>
          </div>
 
@@ -54,6 +57,70 @@
         <div class="container_primario">
             <img src="/static/imagens/icone_salao_festas.png" alt="Ícone representando um salão de festas">
             <h1>Salão de Festas </h1>
+        </div>
+
+        <div class="calendario_tabela">
+            <div class="calendar">
+                <div class="calendar-header">
+                    <button id="prevBtn">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <div class="monthYear" id="monthYear"></div>
+                    <button id="nextBtn">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="days">
+                    <div class="day">Dom</div>
+                    <div class="day">Seg</div>
+                    <div class="day">Ter</div>
+                    <div class="day">Qua</div>
+                    <div class="day">Qui</div>
+                    <div class="day">Sex</div>
+                    <div class="day">Sab</div>
+                </div>
+                <div class="dates" id="dates"></div>
+            </div>
+
+            <div class="bloco-tabela">
+                <div class="informacao">
+                    <p>
+                        <img src="/static/imagens/icone_informacao.png" alt="Ícone de informação">
+                        Visualize a lista de visitantes abaixo, edite, exclua ou cadastre um novo visitante.
+                    </p>
+                </div>
+
+                <table class="tabela">
+                    <thead class="cabeçalho_tabela">
+                        <tr>
+                            <th>Nome</th>
+                            <th>Apartamento</th>
+                            <th>Data</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% block content %}
+                        {% for familiar in familiares %}
+                        <tr>
+                            <td>{{ familiar.nome }}</td>
+                            <td>{{ familiar.apartamento }}</td>
+                            <td>{{ familiar.cpf_visitante }}</td>
+                            <td>
+                                <!-- Botões de ações aqui -->                         
+                                <form action="{{url_for('delete', cpf = familiar.cpf_visitante)}}" method="POST">                         
+                                <!--Fazer o botão editar-->
+                                <button>Editar</button>
+                                <input type="submit" value="Excluir" class="btn btn-danger btn-sn"
+                                    onclick="return confirm('Tem certeza que deseja apagar esse familiar?')"> 
+                                </form>                      
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% endblock %}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     </main>
@@ -101,6 +168,7 @@
           }
         });
     </script>
+    <script src="/static/js/calendar.js"></script>
 
 </body>
 </html>

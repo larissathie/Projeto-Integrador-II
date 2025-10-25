@@ -3,6 +3,13 @@ html, body {
     padding: 0;
     /*overflow: hidden;*/  /* para nao ter scroll na tela */
     position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
 }
 
 header {
@@ -141,7 +148,15 @@ header {
 }
 
 .icone_sair img {
-    margin-right: 25px;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.icone_sair img:hover {
+    transform: scale(1.1);
+    opacity: 0.8;
 }
 
 .nomeUsuario {
@@ -386,38 +401,81 @@ header {
 }
 
                             /*footer*/
+/* RODAPÉ (pai) */
 .rodape {
   background-color: #13062E;
-  width:auto;
-  height: auto;
+  width: 100%;
   display: flex;
-  align-items: center;   /* alinha os cards pelo topo */
-  gap: 40px;                 /* espaço entre os cards */
-  padding: 10px;
+  justify-content: space-around; /* logo à esquerda, bloco de dados à direita */
+  align-items: center;
+  margin-top: auto;
+  padding: 20px 60px;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  z-index: 1000;
 }
 
+/* LOGO: limite a largura do bloco da logo */
+.imagem_rodape {
+  flex: 0 0 280px;   /* largura fixa do bloco da logo */
+  display: flex;
+  align-items: center;
+}
 .imagem_rodape img {
-  width: 293.26px;
-  height: 55px;
-  margin-left: 64px;
-  margin-top: 34px;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0;
+  object-fit: contain;
 }
 
+/* BLOCO DE DADOS: controla largura e distribuição interna */
 .dados_rodape {
-  color: #fff;
   display: flex;
-  margin-top: 10px; 
-  gap: 200px;
-
-}
-.email_rodape {
-  margin-left: 170px;
-  font-size: 20px;
+  justify-content: space-between; /* espaço entre email e localização dentro do bloco */
+  align-items: center;
+  gap: 24px;
+  flex: 1 1 auto;      /* ocupa o restante do espaço */
+  max-width: 800px;    /* controla até onde podem se expandir (ajusta conforme layout) */
 }
 
-.localizacao_rodape {
+/* itens internos (email e mapa) */
+.email_rodape, .localizacao_rodape {
+  color: #fff;
+  max-width: 360px;   /* evita que o texto ocupe tudo */
   font-size: 20px;
-  font-weight: bold;
+  line-height: 1.4;
+}
+
+/* iframe do mapa */
+.localizacao_rodape iframe {
+  height: 90px;
+  border: 0;
+}
+
+/* evita que footer cubra conteúdo */
+main, .conteudo {
+  margin-bottom: auto; /* ajuste conforme a altura real do footer */
+}
+
+/* responsividade */
+@media (max-width: 900px) {
+  .imagem_rodape { flex: 0 0 220px; }
+  .dados_rodape { max-width: 520px; gap: 16px; }
+  .localizacao_rodape iframe { width: 160px; }
+}
+
+@media (max-width: 600px) {
+  .rodape {
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+  }
+  .imagem_rodape { flex: 0 0 auto; width: 160px; margin-bottom: 12px; }
+  .dados_rodape { width: 100%; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  .email_rodape, .localizacao_rodape { max-width: 95%; text-align: center; }
+  main, .conteudo { margin-bottom: 220px; }
 }
 
 

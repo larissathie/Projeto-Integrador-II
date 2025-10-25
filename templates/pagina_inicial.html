@@ -14,7 +14,9 @@
      <header>
 
         <div class="imagem_cabecalho">
-            <a href="{{ url_for('pagina_inicial') }}">><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
+            <a href="{{ url_for('pagina_inicial') }}">
+                 <img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" >
+            </a>
         </div>
 
         <nav class="nav-menu">
@@ -27,8 +29,8 @@
                     </button>
                     <div class="dropdown-content">
                         <a href="{{ url_for('cadastrar_familiares') }}">Cadastrar Familiares</a>   
-                        <a href="{{ url_for('salaoDeFestas') }}">Salão de Festas</a>  
-                        <a href="{{ url_for('churrasqueira') }}">churrasqueira</a>                       
+                        <a href="{{ url_for('CadEventoSalao') }}">Salão de Festas</a>  
+                        <a href="{{ url_for('cadEventoChurras') }}">churrasqueira</a>                       
                     </div>
                 </div>
             
@@ -40,8 +42,11 @@
             </div>
             <p class="nomeUsuario">{{ nome|title if nome else 'Visitante'}}</p>
             <div class="icone_sair">
-                <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
+                <a href="{{ url_for('logout') }}" title="Sair">
+                    <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
+                </a>
             </div>
+
          </div>
 
     </header>
@@ -78,7 +83,7 @@
                     <div class="cadastrar_visitantes">
                         <h2>Salão de Festas</h2>
                         <img src="/static/imagens/icone_salao_festas.png" alt="Imagem simbolizando um salão de festas">
-                        <a href="{{ url_for('salaoDeFestas') }}">Acessar</a>  
+                        <a href="{{ url_for('CadEventoSalao') }}">Acessar</a>  
                        <!-- <a href="p_agend_salaoF.html">Acessar</a>-->
                     </div>
                 </div>
@@ -89,7 +94,7 @@
                     <div class="cadastrar_visitantesChurrasqueira">
                         <h2>Churrasqueira</h2>
                         <img src="/static/imagens/icone_churrasqueira.png" alt="Imagem simbolizando duas pessoas em frente a churrasqueira">
-                        <a href="{{ url_for('churrasqueira') }}">Acessar</a> 
+                        <a href="{{ url_for('cadEventoChurras') }}">Acessar</a> 
                        <!-- <a href="p_agend_churrasqueira.html">Acessar</a> --> 
                     </div>
                 </div>

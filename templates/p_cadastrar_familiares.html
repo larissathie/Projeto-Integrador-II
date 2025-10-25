@@ -31,8 +31,8 @@
                     </button>
                     <div class="dropdown-content">
                         <a href="{{ url_for('cadastrar_familiares') }}">Cadastrar Familiares</a>
-                        <a href="{{ url_for('salaoDeFestas') }}">Salão de Festas</a>
-                        <a href="{{ url_for('churrasqueira') }}">churrasqueira</a>                        
+                        <a href="{{ url_for('CadEventoSalao') }}">Salão de Festas</a>  
+                        <a href="{{ url_for('cadEventoChurras') }}">churrasqueira</a>                        
                     </div>
                 </div>
             </div>
@@ -45,7 +45,9 @@
                 </div>
                 <p class="nomeUsuario">{{ nome|title if nome else 'Visitante'}}</p>
                 <div class="icone_sair">
-                    <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
+                    <a href="{{ url_for('logout') }}" title="Sair">
+                        <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
+                    </a>
                 </div>
             </div>
 
@@ -84,50 +86,51 @@
                 </div>
 
                 <div class="botao">
-                    <!-- Arrumar o botão -->
-                    <button class="submit">Adicionar</button>
+                    <button class="botao_adicionar">Adicionar</button>
                     <button class="botao_cancelar">Cancelar</button>
                 </div>
             </div>
         </form>
 
-        <div class="informacao">
-            <p>
-                <img src="/static/imagens/icone_informacao.png" alt="Ícone de informação">
-                Visualize a lista de visitantes abaixo, edite, exclua ou cadastre um novo visitante.
-            </p>
-        </div>
+        <div class="bloco-tabela">
+            <div class="informacao">
+                <p>
+                    <img src="/static/imagens/icone_informacao.png" alt="Ícone de informação">
+                    Visualize a lista de visitantes abaixo, edite, exclua ou cadastre um novo visitante.
+                </p>
+            </div>
 
-        <table class="tabela">
-            <thead class="cabeçalho_tabela">
-                <tr>
-                    <th>Nome</th>
-                    <th>CPF</th>
-                    <th>Apartamento</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% block content %}
-                {% for familiar in familiares %}
-                <tr>
-                    <td>{{ familiar.nome }}</td>
-                    <td>{{ familiar.cpf_visitante }}</td>
-                    <td>{{ familiar.apartamento }}</td>
-                    <td>
-                        <!-- Botões de ações aqui -->                         
-                         <form action="{{url_for('delete', cpf = familiar.cpf_visitante)}}" method="POST">                         
-                         <!--Fazer o botão editar-->
-                         <button>Editar</button>
-                         <input type="submit" value="Excluir" class="btn btn-danger btn-sn"
-                             onclick="return confirm('Tem certeza que deseja apagar esse familiar?')"> 
-                         </form>                      
-                    </td>
-                </tr>
-                {% endfor %}
-                {% endblock %}
-            </tbody>
-        </table>
+            <table class="tabela">
+                <thead class="cabeçalho_tabela">
+                    <tr>
+                        <th>Nome</th>
+                        <th>CPF</th>
+                        <th>Apartamento</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% block content %}
+                    {% for familiar in familiares %}
+                    <tr>
+                        <td>{{ familiar.nome }}</td>
+                        <td>{{ familiar.cpf_visitante }}</td>
+                        <td>{{ familiar.apartamento }}</td>
+                        <td>
+                            <!-- Botões de ações aqui -->                         
+                            <form action="{{url_for('delete', cpf = familiar.cpf_visitante)}}" method="POST">                         
+                            <!--Fazer o botão editar-->
+                            <button>Editar</button>
+                            <input type="submit" value="Excluir" class="btn btn-danger btn-sn"
+                                onclick="return confirm('Tem certeza que deseja apagar esse familiar?')"> 
+                            </form>                      
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% endblock %}
+                </tbody>
+            </table>
+        </div>
 
     </main>
 

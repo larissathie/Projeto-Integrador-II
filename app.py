@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, request,url_for,flash,redirect
+from flask import Flask, render_template, request,url_for,flash, session, redirect, url_for
 import os, datetime
 import requests
 import sqlite3
@@ -128,9 +128,7 @@ def adicionarFamiliar():
       return redirect(url_for('cadastrar_familiares'))         
     return render_template('cadastrar_familiares')
 
-
 #Rota para editar um familiar
-
 @app.route('/<int:cpf>/delete', methods=('POST',))
 def delete(cpf):
     familiarExcluido = get_familiar(cpf)
@@ -138,7 +136,17 @@ def delete(cpf):
     db.session.commit()    
     return redirect(url_for('cadastrar_familiares'))
 
+### ROTA PARA TELA DE CADASTRAR EVENTOS
+@app.route('/cadastro_Salao', methods=['GET', 'POST'])
+def CadEventoSalao():
+    nome_usuario = session.get('usuario_nome')
+    cpf_morador = session.get('usuario_cpf')
+    ap_morador = session.get('usuario_apartamento')
+    error = request.args.get('error')
+    eventos = Espaco.query.filter_by(cpf_morador=cpf_morador).all()
+    todosEventos = Espaco.query.all()
 
+    return render_template('p_agend_salaoF.html', nome=nome_usuario , cpf = cpf_morador , apartamento = ap_morador , eventos = eventos , todosEventos = todosEventos , error = error)
 
 #Rota para página salão de festas
 @app.route('/salaoDeFestas', methods=['GET', 'POST'])
@@ -148,6 +156,16 @@ def salaoDeFestas():
     familiares = Familiar.query.filter_by(cpf_morador = cpf_morador).all()
     error = request.args.get('error')
     return render_template('cad_con_salaoF.html', nome=nome_usuario, familiares=familiares , error = error) 
+
+@app.route('/cadastro_churrasqueira', methods=['GET', 'POST'])
+def cadEventoChurras():
+    nome_usuario = session.get('usuario_nome')
+    cpf_morador = session.get('usuario_cpf')
+    ap_morador = session.get('usuario_apartamento')
+    error = request.args.get('error')
+  #  eventos = Espaco.query.filter_by(cpf_morador=cpf_morador).all()
+   # todosEventos = Espaco.query.all()
+    return render_template('p_agend_churrasqueira.html', nome=nome_usuario , cpf = cpf_morador , apartamento = ap_morador , eventos = eventos , todosEventos = todosEventos , error = error)
 
 #Rota para página Churrasqueira
 @app.route('/churrasqueira', methods=['GET', 'POST'])
@@ -181,6 +199,12 @@ def handle_form():
                 return "Erro na validação do reCAPTCHA. Tente novamente."
         return "Token reCAPTCHA não recebido."
     return render_template('seu_formulario.html') # Renderiza o formulário
+
+# Rota para sair da página
+@app.route('/logout')
+def logout():
+    session.clear()  # limpa a sessão do usuário
+    return redirect(url_for('index'))  # volta para a tela de login (que está na rota '/')
 
 
 
