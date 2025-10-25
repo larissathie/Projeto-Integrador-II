@@ -21,7 +21,6 @@ cur.execute("INSERT INTO moradores (cpf, nome, apartamento, email, senha , admin
             (99999999999, 'admin', '999', 'admin@admin.com', 'admin', 'sim'))
 
 
-
 connection.commit()
 connection.close()
 print("Banco criado com sucesso com dados de teste.")

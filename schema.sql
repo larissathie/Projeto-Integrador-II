@@ -14,6 +14,7 @@ CREATE TABLE moradores (
 
 CREATE TABLE agendamento_evento (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
     cpf_morador INTEGER NOT NULL,
     data DATE NOT NULL,
     local INTEGER NOT NULL,

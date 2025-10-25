@@ -28,8 +28,8 @@
                     </button>
                     <div class="dropdown-content">
                         <a href="{{ url_for('cadastrar_familiares') }}">Cadastrar Familiares</a>   
-                        <a href="{{ url_for('salaoDeFestas') }}">Salão de Festas</a>  
-                        <a href="{{ url_for('churrasqueira') }}">churrasqueira</a>
+                        <a href="{{ url_for('CadEventoSalao') }}">Salão de Festas</a>  
+                        <a href="{{ url_for('cadEventoChurras') }}">churrasqueira</a>
                         <!--
                         <a href="p_agend_salaoF.html">Salão de Festas</a>
                         <a href="p_agend_churrasqueira.html">churrasqueira</a>
@@ -58,7 +58,7 @@
             <img src="/static/imagens/icone_salao_festas.png" alt="Ícone representando um salão de festas">
             <h1>Salão de Festas </h1>
         </div>
-
+        
         <div class="calendario_tabela">
             <div class="calendar">
                 <div class="calendar-header">
@@ -83,7 +83,7 @@
                 <button class="botao_reservar" id="btnReservar">
                     <span>Reservar</span>
                 </button>
-
+                
                 <div class="status-container">
                     <div class="status-reservado-disponivel">
                         <p class="status-item">
@@ -113,7 +113,7 @@
                 </div>
             </div>
             </div>
-
+            
             <div class="bloco-tabela">
                 <div class="informacao">
                     <p>
@@ -121,7 +121,7 @@
                         Visualize a lista de visitantes abaixo, edite, exclua ou cadastre um novo visitante.
                     </p>
                 </div>
-
+                {% if todosEventos %}
                 <table class="tabela">
                     <thead class="cabeçalho_tabela">
                         <tr>
@@ -132,28 +132,30 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% block content %}
-                        {% for familiar in familiares %}
+                        {% for evento in todosEventos %}
                         <tr>
-                            <td>{{ familiar.nome }}</td>
-                            <td>{{ familiar.apartamento }}</td>
-                            <td>{{ familiar.cpf_visitante }}</td>
+                            <td>{{ evento.nome }}</td>
+                            <td>{{ evento.apartamento }}</td>
+                            <td>{{ evento.data.strftime('%d/%m/%Y') }}</td>
                             <td>
                                 
-                                <a href="{{ url_for('cad_con_salaoF') }}">
+                                <a href="{{ url_for('CadEventoSalao') }}">
                                     <img src="/static/imagens/usuarios.png" alt="icone de usuário">
                                 </a>
-
-                                <a href="{{ url_for('delete') }}">
-                                    <img src="/static/imagens/lixeira.png" alt="imagm de uma lixeira">
-                                </a>
+                                {#
+                                    <a href="{{ url_for('delete') }}">
+                                    <img src="/static/imagens/lixeira.png" alt="imagem de uma lixeira">
+                                    </a>
+                                #}
                      
                             </td>
                         </tr>
                         {% endfor %}
-                        {% endblock %}
                     </tbody>
                 </table>
+                {% else %}
+                <p>Nenhum evento agendado ainda.</p>
+                {% endif %}
             </div>
         </div>
 
@@ -181,6 +183,9 @@
     </footer>
 
     <script>
+        // Variavel para o calendário saber onde cadastrar no banco de dados
+        var AMBIENTE_ATUAL = 'salao';
+
         // Pega o botão e o conteúdo do dropdown
         const dropdownBtn = document.querySelector('.dropdown-btn');
         const dropdownContent = document.querySelector('.dropdown-content');
