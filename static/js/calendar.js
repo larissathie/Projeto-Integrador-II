@@ -68,3 +68,95 @@ nextBtn.addEventListener('click', () => {
 })
 
 updateCalendar();
+
+const btnReservar = document.getElementById('btnReservar');
+const popupReserva = document.getElementById('popupReserva');
+const confirmarReserva = document.getElementById('confirmarReserva');
+const cancelarReserva = document.getElementById('cancelarReserva');
+const mensagemReserva = document.getElementById('mensagemReserva');
+
+// Função para abrir o popup se tiver uma data selecionada
+btnReservar.addEventListener('click', () => {
+    const selectedDay = document.querySelector('.selected');
+    if (!selectedDay) {
+        alert('Selecione uma data antes de reservar!');
+        return;
+    }
+
+    const dataSelecionada = selectedDay.getAttribute('day');
+    const dataFormatada = new Date(dataSelecionada).toLocaleDateString('pt-BR');
+
+    mensagemReserva.textContent = `Deseja confirmar a reserva para o dia ${dataFormatada}?`;
+    popupReserva.style.display = 'flex';
+});
+
+// Confirmar reserva - VERSÃO CORRIGIDA
+confirmarReserva.addEventListener('click', () => {
+    const selectedDay = document.querySelector('.selected');
+    if (!selectedDay) {
+        alert('Selecione uma data antes de reservar!');
+        return;
+    }
+
+    const dataSelecionada = selectedDay.getAttribute('day'); // ← Variável declarada aqui
+    const dataFormatada = new Date(dataSelecionada).toLocaleDateString('pt-BR');
+
+    mensagemReserva.textContent = `Deseja confirmar a reserva para o dia ${dataFormatada}?`;
+    popupReserva.style.display = 'flex';
+});
+
+// ✅ CORRIGIR ESTA LINHA ESPECIFICAMENTE:
+confirmarReserva.addEventListener('click', () => {
+    const selectedDay = document.querySelector('.selected');
+    const dataSelecionada = selectedDay.getAttribute('day'); // ← Declarar novamente ou usar a de cima
+    
+    popupReserva.style.display = 'none';
+    alert('Reserva confirmada com sucesso!');
+    
+    // ✅ CORRETO - sem typo:
+    enviarReservaParaBackend(dataSelecionada); // ← "dataSelecionada" não "dataselecionada"
+});
+
+// Função para enviar para o backEnd
+
+function enviarReservaParaBackend(dataSelecionada) {
+    console.log("🔍 Iniciando agendamento...");
+    
+    let rota = '';
+    if (AMBIENTE_ATUAL === 'salao') {
+        rota = '/cadastro_Salao';
+    } else if (AMBIENTE_ATUAL === 'churrasqueira') {
+        rota = '/cadastro_churrasqueira';  // ← VERIFIQUE SE ESTÁ ESCRITO CORRETO
+    }
+    
+    console.log("🔄 Rota que será usada:", rota);
+    
+    fetch(rota, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({data_reserva: dataSelecionada})
+    })
+    .then(response => {
+        console.log("📨 Status da resposta:", response.status);
+        console.log("📨 URL da resposta:", response.url);
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("✅ Sucesso:", data);
+        alert(data.message);
+        setTimeout(() => { window.location.reload(); }, 1000);
+    })
+    .catch(error => {
+        console.error("❌ Erro completo:", error);
+        alert('Erro ao agendar: ' + error.message);
+    });
+}
+
+
+// Cancelar reserva
+cancelarReserva.addEventListener('click', () => {
+    popupReserva.style.display = 'none';
+});

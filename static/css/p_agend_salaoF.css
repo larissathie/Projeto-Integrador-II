@@ -192,6 +192,7 @@ header {
   display: flex;
   align-items: center;
   margin-left: 40px;
+  gap: 20px;
 }
 
 /* Tabela e informação */ 
@@ -232,6 +233,16 @@ header {
 
 .tabela th {
     background-color: #f2f2f2;
+}
+
+.tabela img {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.tabela a {
+  text-decoration: none;
 }
 
 

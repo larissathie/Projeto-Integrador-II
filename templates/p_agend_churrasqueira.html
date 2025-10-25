@@ -80,6 +80,38 @@
                     <div class="day">Sab</div>
                 </div>
                 <div class="dates" id="dates"></div>
+                <button class="botao_reservar" id="btnReservar">
+                    <span>Reservar</span>
+                </button>
+
+                <div class="status-container">
+                    <div class="status-reservado-disponivel">
+                        <p class="status-item">
+                            <img src="/static/imagens/status_azul.png" alt="Status de Data Selecionada">
+                            Data Selecionada
+                        </p>
+                        <p class="status-item">
+                            <img src="/static/imagens/status_verde.png" alt="Status de Reserva Concluída">
+                            Reserva concluída
+                        </p>
+                    </div>
+                    <p class="status-item status-indisponivel">
+                        <img src="/static/imagens/status_vermelho.png" alt="Status que não possui disponibilidade">
+                        Não possui disponibilidade
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Popup de confirmação -->
+            <div id="popupReserva" class="popup">
+            <div class="popup-conteudo">
+                <p id="mensagemReserva">Deseja confirmar a reserva?</p>
+                <div class="botoes-popup">
+                <button id="confirmarReserva">Confirmar</button>
+                <button id="cancelarReserva">Cancelar</button>
+                </div>
+            </div>
             </div>
 
             <div class="bloco-tabela">
@@ -89,7 +121,7 @@
                         Visualize a lista de visitantes abaixo, edite, exclua ou cadastre um novo visitante.
                     </p>
                 </div>
-
+                {% if todosEventos %}
                 <table class="tabela">
                     <thead class="cabeçalho_tabela">
                         <tr>
@@ -100,26 +132,29 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% block content %}
-                        {% for familiar in familiares %}
+                        {% for evento in todosEventos %}
                         <tr>
-                            <td>{{ familiar.nome }}</td>
-                            <td>{{ familiar.apartamento }}</td>
-                            <td>{{ familiar.cpf_visitante }}</td>
+                            <td>{{ evento.nome }}</td>
+                            <td>{{ evento.apartamento }}</td>
+                            <td>{{ evento.data.strftime('%d/%m/%Y') }}</td>
                             <td>
-                                <!-- Botões de ações aqui -->                         
+                                <!-- Botões de ações aqui --> 
+                                 {#                       
                                 <form action="{{url_for('delete', cpf = familiar.cpf_visitante)}}" method="POST">                         
                                 <!--Fazer o botão editar-->
                                 <button>Editar</button>
                                 <input type="submit" value="Excluir" class="btn btn-danger btn-sn"
                                     onclick="return confirm('Tem certeza que deseja apagar esse familiar?')"> 
-                                </form>                      
+                                </form>    
+                                #}                  
                             </td>
                         </tr>
-                        {% endfor %}
-                        {% endblock %}
+                        {% endfor %}                        
                     </tbody>
                 </table>
+                    {% else %}
+                    <p>Nenhuma churrasqueira agendada ainda.</p>
+                    {% endif %}
             </div>
         </div>
 
@@ -147,6 +182,9 @@
     </footer>
 
     <script>
+        // Variavel para o calendário saber onde cadastrar no banco de dados
+        var AMBIENTE_ATUAL = 'churrasqueira';
+
         // Pega o botão e o conteúdo do dropdown
         const dropdownBtn = document.querySelector('.dropdown-btn');
         const dropdownContent = document.querySelector('.dropdown-content');

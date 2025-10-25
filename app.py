@@ -1,10 +1,12 @@
 
-from flask import Flask, render_template, request,url_for,flash, session, redirect, url_for
-import os, datetime
+from flask import Flask, render_template, request,url_for,flash, session, redirect, url_for ,jsonify
+import os, datetime  
 import requests
 import sqlite3
 from flask_sqlalchemy import SQLAlchemy
 from flask import session
+from datetime import datetime
+#from flask_cors import CORS
 from werkzeug.exceptions import abort
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
@@ -50,8 +52,9 @@ class ConvidadoEvento(db.Model):
     apartamento = db.Column(db.String(10), nullable=False)
 
 class Espaco(db.Model):
-    __tablename__ = 'agendamento_evento'
+    __tablename__ = 'agendamento_evento'    
     id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(50), nullable=False)
     cpf_morador = db.Column(db.Integer, nullable=False)
     data = db.Column(db.DateTime, nullable = False)
     local = db.Column(db.Integer)
@@ -136,6 +139,9 @@ def delete(cpf):
     db.session.commit()    
     return redirect(url_for('cadastrar_familiares'))
 
+
+
+
 ### ROTA PARA TELA DE CADASTRAR EVENTOS
 @app.route('/cadastro_Salao', methods=['GET', 'POST'])
 def CadEventoSalao():
@@ -144,9 +150,67 @@ def CadEventoSalao():
     ap_morador = session.get('usuario_apartamento')
     error = request.args.get('error')
     eventos = Espaco.query.filter_by(cpf_morador=cpf_morador).all()
-    todosEventos = Espaco.query.all()
+    todosEventos = Espaco.query.filter(
+    Espaco.ambientes == 'salao de festas',
+    Espaco.data >= datetime.now()
+).order_by(Espaco.data.asc()).all()
 
-    return render_template('p_agend_salaoF.html', nome=nome_usuario , cpf = cpf_morador , apartamento = ap_morador , eventos = eventos , todosEventos = todosEventos , error = error)
+    # SE FOR POST (só vai vir do JavaScript)
+    if request.method == 'POST':
+        try:
+            # Sempre vem como JSON do JavaScript
+            dados = request.get_json()
+            data_selecionada = dados.get('data_reserva')
+            
+            print(f"🎯 DADOS DO JAVASCRIPT:")
+            print(f"👤 Usuário: {nome_usuario}")
+            print(f" Apartamento: {ap_morador}")
+            print(f"📅 Data: {data_selecionada}")
+            
+            if data_selecionada:
+                # Converter data
+                data_convertida = data_selecionada.split(' GMT')[0]
+                data_obj = datetime.strptime(data_convertida, '%a %b %d %Y %H:%M:%S')
+                
+                print(f"📅 DATA CONVERTIDA: {data_obj.strftime('%d/%m/%Y')}")
+                
+                # SALVAR NO BANCO
+                novo_evento = Espaco(
+                     nome = nome_usuario,
+                     cpf_morador=cpf_morador,
+                     data=data_obj,
+                     local = 1,
+                     ambientes = 'salao de festas',
+                     apartamento=ap_morador
+                    )
+                
+                db.session.add(novo_evento)
+                db.session.commit()               
+                
+                return jsonify({
+                    'status': 'success', 
+                    'message': f'Evento agendado para {data_obj.strftime("%d/%m/%Y")}!',
+                    'data_salva': data_obj.strftime('%d/%m/%Y')
+                })
+            else:
+                return jsonify({'status': 'error', 'message': 'Data não selecionada'}), 400
+            
+                
+        except Exception as e:
+            print(f"❌ Erro: {e}")
+            return jsonify({'status': 'error', 'message': str(e)}), 400
+            
+    
+    # SE FOR GET (mostrar a página)
+    return render_template('p_agend_salaoF.html',
+                         nome=nome_usuario, 
+                         cpf=cpf_morador, 
+                         apartamento=ap_morador, 
+                         eventos=eventos, 
+                         todosEventos=todosEventos, 
+                         error=error)
+
+
 
 #Rota para página salão de festas
 @app.route('/salaoDeFestas', methods=['GET', 'POST'])
@@ -157,15 +221,96 @@ def salaoDeFestas():
     error = request.args.get('error')
     return render_template('cad_con_salaoF.html', nome=nome_usuario, familiares=familiares , error = error) 
 
+
+
+
+
+
+
+
+
+###ROTA PARA CADASTRO DE EVENTO CHURRASQUEIRA
 @app.route('/cadastro_churrasqueira', methods=['GET', 'POST'])
 def cadEventoChurras():
     nome_usuario = session.get('usuario_nome')
     cpf_morador = session.get('usuario_cpf')
     ap_morador = session.get('usuario_apartamento')
     error = request.args.get('error')
-  #  eventos = Espaco.query.filter_by(cpf_morador=cpf_morador).all()
-   # todosEventos = Espaco.query.all()
-    return render_template('p_agend_churrasqueira.html', nome=nome_usuario , cpf = cpf_morador , apartamento = ap_morador , eventos = eventos , todosEventos = todosEventos , error = error)
+    
+    # Meus eventos da churrasqueira
+    meus_eventos = Espaco.query.filter_by(
+        cpf_morador=cpf_morador,
+        ambientes='churrasqueira'
+    ).order_by(Espaco.data.desc()).all()
+    
+    # Todos os eventos da churrasqueira (futuros)
+    todosEventos = Espaco.query.filter(
+        Espaco.ambientes == 'churrasqueira',
+        Espaco.data >= datetime.now()
+    ).order_by(Espaco.data.asc()).all()
+    
+    print(f"🎯 Churrasqueira - Meus eventos: {len(meus_eventos)}")
+    print(f"🎯 Churrasqueira - Todos os eventos: {len(todosEventos)}")
+    
+    # SE FOR POST (JavaScript)
+    if request.method == 'POST':
+        try:
+            dados = request.get_json()
+            data_selecionada = dados.get('data_reserva')
+            
+            if data_selecionada:
+                data_convertida = data_selecionada.split(' GMT')[0]
+                data_obj = datetime.strptime(data_convertida, '%a %b %d %Y %H:%M:%S')
+                
+                # ✅ SALVAR COMO CHURRASQUEIRA
+                novo_evento = Espaco(
+                    nome=nome_usuario,
+                    cpf_morador=cpf_morador,
+                    data=data_obj,
+                    local=2,  # Local da churrasqueira
+                    ambientes='churrasqueira',
+                    apartamento=ap_morador
+                )
+                
+                db.session.add(novo_evento)
+                db.session.commit()
+                
+                print(f"✅ Churrasqueira salva: {data_obj.strftime('%d/%m/%Y')}")
+                
+                return jsonify({
+                    'status': 'success', 
+                    'message': f'Churrasqueira agendada para {data_obj.strftime("%d/%m/%Y")}!'
+                })
+            else:
+                return jsonify({'status': 'error', 'message': 'Data não selecionada'}), 400
+                
+        except Exception as e:
+            print(f"❌ ERRO na churrasqueira: {e}")
+            db.session.rollback()
+            return jsonify({'status': 'error', 'message': str(e)}), 400
+    
+    # SE FOR GET (mostrar a página)
+    return render_template('p_agend_churrasqueira.html', 
+                         nome=nome_usuario, 
+                         cpf=cpf_morador, 
+                         apartamento=ap_morador, 
+                         eventos=meus_eventos, 
+                         todosEventos=todosEventos,
+                         error=error)
+###########
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #Rota para página Churrasqueira
 @app.route('/churrasqueira', methods=['GET', 'POST'])
@@ -175,6 +320,7 @@ def churrasqueira():
     familiares = Familiar.query.filter_by(cpf_morador = cpf_morador).all()
     error = request.args.get('error')
     return render_template('cad_con_churrasqueira.html', nome=nome_usuario, familiares=familiares , error = error) 
+
 
 @app.route('/seu-formulario', methods=['GET', 'POST'])
 def handle_form():
@@ -206,10 +352,6 @@ def logout():
     session.clear()  # limpa a sessão do usuário
     return redirect(url_for('index'))  # volta para a tela de login (que está na rota '/')
 
-
-
-
-
 ####### FUNÇÕES
 ### FUNÇÃO GET FAMILIAR
 def get_familiar(familiar_cpf):
@@ -217,6 +359,47 @@ def get_familiar(familiar_cpf):
     if familiar is None:
         abort(484)
     return familiar
+
+
+
+
+
+##### TESTE DE CAPTURA DE DATA
+@app.route('/processar-reserva', methods=['POST'])
+def processar_reserva():
+
+    print("🎯 ROTA /processar-reserva ACESSADA!")    
+    try:
+        if not request.is_json:
+            return jsonify({'error': 'Content-Type must be application/json'}), 400
+        
+        dados = request.get_json()
+        print(f"📄 Dados recebidos: {dados}")
+        
+        data_selecionada = dados.get('data_reserva')
+        
+        if not data_selecionada:
+            return jsonify({'error': 'data_reserva is required'}), 400
+        
+        print(f"🎯 DATA RECEBIDA: {data_selecionada}")
+        
+        # Converter para formato Python
+        data_convertida = data_selecionada.split(' GMT')[0]
+        data_obj = datetime.strptime(data_convertida, '%a %b %d %Y %H:%M:%S')
+        
+        print(f"📅 DATA CONVERTIDA: {data_obj.strftime('%d/%m/%Y')}")
+        
+        return jsonify({
+            'status': 'success', 
+            'message': 'Reserva confirmada!',
+            'data_convertida': data_obj.strftime('%d/%m/%Y')
+        })
+            
+    except Exception as e:
+        print(f"❌ Erro: {e}")
+        return jsonify({'status': 'error', 'message': str(e)}), 400
+    
+    
 
 
 if __name__ == '__main__':

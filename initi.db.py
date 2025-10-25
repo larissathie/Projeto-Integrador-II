@@ -20,9 +20,6 @@ cur.execute("INSERT INTO visitantes_apartamento (cpf_visitante, cpf_morador, nom
 cur.execute("INSERT INTO moradores (cpf, nome, apartamento, email, senha , admin) VALUES (?, ?, ?, ?, ?, ?)",
             (99999999999, 'admin', '999', 'admin@admin.com', 'admin', 'sim'))
 
-cur.execute("INSERT INTO agendamento_evento (cpf_morador, data, local, ambientes, apartamento) VALUES (?, ?, ?, ?, ?)",
-            (99999999999, '	2025-08-13 ', 1, 'churrasqueira', '110'))
-
 
 connection.commit()
 connection.close()
