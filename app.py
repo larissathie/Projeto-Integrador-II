@@ -48,6 +48,7 @@ class ConvidadoEvento(db.Model):
     __tablename__ = 'visitantes_eventos'
     id_visitante = db.Column(db.Integer, primary_key=True)
     id_agendamento = db.Column(db.Integer, db.ForeignKey('agendamento_evento.id'), nullable=False)   
+    cpf = db.Column(db.String(14), nullable=False)
     nome = db.Column(db.String(50), nullable=False)
     apartamento = db.Column(db.String(10), nullable=False)
 
@@ -355,13 +356,14 @@ def adicionarVisitanteSalao(id):
      eventoAtual = get_eventos(id)
      idEvento =  eventoAtual.id
      form_nome = request.form['nome'].lower()
+     form_cpf = request.form['cpf'].lower()
      apartamento = eventoAtual.apartamento
      
     if not form_nome:      
       flash('O Nome é obrigatório!')
     else: 
            
-      convidado = ConvidadoEvento(id_agendamento = idEvento, nome = form_nome , apartamento = apartamento)
+      convidado = ConvidadoEvento(id_agendamento = idEvento, nome = form_nome, cpf = form_cpf , apartamento = apartamento)
       db.session.add(convidado)
       db.session.commit()
       return redirect(url_for('cadastrar_visitantes_Salao', id = idEvento))         
@@ -385,13 +387,14 @@ def adicionarVisitanteChurras(id):
      eventoAtual = get_eventos(id)
      idEvento =  eventoAtual.id
      form_nome = request.form['nome'].lower()
+     form_cpf = request.form['cpf'].lower()
      apartamento = eventoAtual.apartamento
      
     if not form_nome:      
       flash('O Nome é obrigatório!')
     else: 
            
-      convidado = ConvidadoEvento(id_agendamento = idEvento, nome = form_nome , apartamento = apartamento)
+      convidado = ConvidadoEvento(id_agendamento = idEvento, nome = form_nome , cpf = form_cpf ,apartamento = apartamento)
       db.session.add(convidado)
       db.session.commit()
       return redirect(url_for('cadastrar_visitantes_Churras', id = idEvento))         

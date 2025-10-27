@@ -89,8 +89,7 @@
                 <thead class="cabeçalho_tabela">
                     <tr>
                         <th>Nome</th>
-                        <th>CPF</th>
-                        <th>Anfitrião</th>
+                        <th>CPF</th>                        
                         <th>Apartamento</th>                        
                         <th>Ações</th>
                     </tr>
@@ -98,8 +97,8 @@
                         {% for convidado in convidados %}
                         <tr>
                             <td>{{ convidado.nome }}</td>
-                            <td>{{ convidado.nome }}</td>
-                            <td>{{ convidado.nome }}</td>
+                            <td>{{ convidado.cpf }}</td>
+                            <td>{{ convidado.apartamento }}</td>
                             <td>
 
                                 <form action="{{ url_for('deleteConvidadoSalao', id=convidado['id_visitante']) }}" method="POST" 
