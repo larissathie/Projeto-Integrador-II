@@ -137,16 +137,17 @@
                             <td>{{ evento.nome }}</td>
                             <td>{{ evento.apartamento }}</td>
                             <td>{{ evento.data.strftime('%d/%m/%Y') }}</td>
-                            <td>
-                                <!-- Botões de ações aqui --> 
-                                 {#                       
-                                <form action="{{url_for('delete', cpf = familiar.cpf_visitante)}}" method="POST">                         
-                                <!--Fazer o botão editar-->
-                                <button>Editar</button>
-                                <input type="submit" value="Excluir" class="btn btn-danger btn-sn"
-                                    onclick="return confirm('Tem certeza que deseja apagar esse familiar?')"> 
-                                </form>    
-                                #}                  
+                            <td>                                
+                                <a href="{{ url_for('cadastrar_visitantes_Churras', id = evento['id']) }}">
+                                    <img src="/static/imagens/usuarios.png" alt="icone de usuário">
+                                </a>
+                                
+                                <form action="{{ url_for('deleteEventoChurras', id=evento['id']) }}" method="POST" 
+                                onsubmit="return confirm('Tem certeza que deseja apagar esse evento?')">
+                                <button type="submit" class="btn-excluir" style="background: none; border: none; cursor: pointer;">
+                                <img src="/static/imagens/lixeira.png" alt="imagem de uma lixeira">
+                                </button>
+                                </form>                 
                             </td>
                         </tr>
                         {% endfor %}                        
