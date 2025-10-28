@@ -48,6 +48,7 @@ class ConvidadoEvento(db.Model):
     __tablename__ = 'visitantes_eventos'
     id_visitante = db.Column(db.Integer, primary_key=True)
     id_agendamento = db.Column(db.Integer, db.ForeignKey('agendamento_evento.id'), nullable=False)   
+    cpf = db.Column(db.String(14), nullable=False)
     nome = db.Column(db.String(50), nullable=False)
     apartamento = db.Column(db.String(10), nullable=False)
 
@@ -87,8 +88,16 @@ def login():
         session['usuario_nome'] = user.nome
         session['usuario_apartamento'] = user.apartamento #apresenta o nome do usuário no lado direito da tela
         session['usuario_admin'] = user.admin
-        print('2')
-        return redirect(url_for('pagina_inicial')) 
+
+        # Verifica se o usuário é admin
+        if user.admin == 'sim':
+            print('2 - Admin')
+            return redirect(url_for('pagina_admin'))  # Redireciona para página de admin
+        else:
+            print('2 - Usuário normal')
+            return redirect(url_for('pagina_inicial'))  # Redireciona para página normal
+        #print('2')
+        #return redirect(url_for('pagina_inicial')) 
     else:
         print('3')
         return render_template('login.html', error="Usuário ou senha incorretos!")
@@ -101,6 +110,34 @@ def pagina_inicial():
     usuario_apartamento = session.get('usuario_apartamento')
     usuario_admin = session.get('usuario_admin')
     return render_template('pagina_inicial.html', nome=nome_usuario , cpf = usuario_cpf , apartamento = usuario_apartamento, admin = usuario_admin)
+
+#Rota para sucesso do login admin
+@app.route('/pInicial_admin')
+def pagina_admin():
+    nome_usuario = session.get('usuario_nome')
+    usuario_cpf = session.get('usuario_cpf')
+    usuario_apartamento = session.get('usuario_apartamento')
+    usuario_admin = session.get('usuario_admin')
+    return render_template('p_inicial_administrador.html', nome=nome_usuario , cpf = usuario_cpf , apartamento = usuario_apartamento, admin = usuario_admin)
+
+#Rota para cadastro de moradores
+@app.route('/cadastro_moradores')
+def Cadastrar_moradores():
+    nome_usuario = session.get('usuario_nome')
+    usuario_cpf = session.get('usuario_cpf')
+    usuario_apartamento = session.get('usuario_apartamento')
+    usuario_admin = session.get('usuario_admin')
+    moradores = Usuario.query.all()
+    return render_template('p_cadastrar_morador.html', nome=nome_usuario , cpf = usuario_cpf , apartamento = usuario_apartamento, admin = usuario_admin, moradores=moradores)
+
+#Rota para pesquisar acessos
+@app.route('/Pesquisar_acessos')
+def Pesquisa_acessos():
+    nome_usuario = session.get('usuario_nome')
+    usuario_cpf = session.get('usuario_cpf')
+    usuario_apartamento = session.get('usuario_apartamento')
+    usuario_admin = session.get('usuario_admin')
+    return render_template('pesquisar_acessos.html', nome=nome_usuario , cpf = usuario_cpf , apartamento = usuario_apartamento, admin = usuario_admin)
 
 #Rota para página cadastrar familiares
 @app.route('/cadastrar_familiares', methods=['GET', 'POST'])
@@ -140,9 +177,20 @@ def delete(cpf):
     return redirect(url_for('cadastrar_familiares'))
 
 
+#Rota para página salão de festas
+@app.route('/salaoDeFestas', methods=['GET', 'POST'])
+def salaoDeFestas():
+    nome_usuario = session.get('usuario_nome')
+    cpf_morador = session.get('usuario_cpf')
+    familiares = Familiar.query.filter_by(cpf_morador = cpf_morador).all()
 
+    eventos = Espaco.query.filter_by(cpf_morador=cpf_morador).all()
+    todosEventos = Espaco.query.all()
 
-### ROTA PARA TELA DE CADASTRAR EVENTOS
+    error = request.args.get('error')
+    return render_template('cad_con_salaoF.html', nome=nome_usuario, familiares=familiares, eventos = eventos , todosEventos = todosEventos, error = error) 
+
+### Cadastrar evento salão
 @app.route('/cadastro_Salao', methods=['GET', 'POST'])
 def CadEventoSalao():
     nome_usuario = session.get('usuario_nome')
@@ -210,23 +258,22 @@ def CadEventoSalao():
                          todosEventos=todosEventos, 
                          error=error)
 
+## ROTA PARA DELETAR EVENTO
+@app.route('/evento/<int:id>/deleteSalao', methods=('POST',))
+def deleteEventoSalao(id):   
+    EventoExcluido = get_eventos(id)       
+    db.session.delete(EventoExcluido)
+    db.session.commit()
+    return redirect(url_for('CadEventoSalao'))
 
-
-#Rota para página salão de festas
-@app.route('/salaoDeFestas', methods=['GET', 'POST'])
-def salaoDeFestas():
+#Rota para página Churrasqueira
+@app.route('/churrasqueira', methods=['GET', 'POST'])
+def churrasqueira():
     nome_usuario = session.get('usuario_nome')
     cpf_morador = session.get('usuario_cpf')
     familiares = Familiar.query.filter_by(cpf_morador = cpf_morador).all()
     error = request.args.get('error')
-    return render_template('cad_con_salaoF.html', nome=nome_usuario, familiares=familiares , error = error) 
-
-
-
-
-
-
-
+    return render_template('cad_con_churrasqueira.html', nome=nome_usuario, familiares=familiares , error = error) 
 
 
 ###ROTA PARA CADASTRO DE EVENTO CHURRASQUEIRA
@@ -297,7 +344,201 @@ def cadEventoChurras():
                          eventos=meus_eventos, 
                          todosEventos=todosEventos,
                          error=error)
-###########
+
+
+## ROTA PARA DELETAR EVENTO
+@app.route('/evento/<int:id>/deleteChurras', methods=('POST',))
+def deleteEventoChurras(id):   
+    EventoExcluido = get_eventos(id)       
+    db.session.delete(EventoExcluido)
+    db.session.commit()
+    return redirect(url_for('cadEventoChurras'))
+
+##Cadastro de convidados para enventos
+## Rota para tela de convidados salao
+@app.route('/cad_con_salaoF.html/<int:id>')
+def cadastrar_visitantes_Salao(id):
+    eventoCarregado = get_eventos(id) 
+    convidadosCarregados = get_convidados(id)
+    return render_template('cad_con_salaoF.html', evento = eventoCarregado , convidados = convidadosCarregados)
+
+## ROTA PARA DELETAR CONVIDADO SALÃO
+@app.route('/<int:id>/deleteConvidadoSalao', methods=('POST',))
+def deleteConvidadoSalao(id):
+    convidadoExcluido = get_convidado_unico(id)    
+    idEvento = convidadoExcluido.id_agendamento 
+    db.session.delete(convidadoExcluido)
+    db.session.commit()
+    
+    return redirect(url_for('cadastrar_visitantes_Salao', id = idEvento))
+
+## Rota para tela de convidados churrasco
+@app.route('/cad_con_churrasqueira.html/<int:id>')
+def cadastrar_visitantes_Churras(id):
+    eventoCarregado = get_eventos(id) 
+    convidadosCarregados = get_convidados(id)
+    return render_template('cad_con_churrasqueira.html', evento = eventoCarregado , convidados = convidadosCarregados)
+
+
+## Rota para adicionar visitantes ao evento
+@app.route('/addVisitanteSalao/<int:id>' , methods=['GET','POST'])
+def adicionarVisitanteSalao(id):
+    if request.method == 'POST':
+     
+     eventoAtual = get_eventos(id)
+     idEvento =  eventoAtual.id
+     form_nome = request.form['nome'].lower()
+     form_cpf = request.form['cpf'].lower()
+     apartamento = eventoAtual.apartamento
+     
+    if not form_nome:      
+      flash('O Nome é obrigatório!')
+    else: 
+           
+      convidado = ConvidadoEvento(id_agendamento = idEvento, nome = form_nome, cpf = form_cpf , apartamento = apartamento)
+      db.session.add(convidado)
+      db.session.commit()
+      return redirect(url_for('cadastrar_visitantes_Salao', id = idEvento))         
+    return render_template('cad_con_salaoF.html')
+
+## ROTA PARA DELETAR CONVIDADO SALÃO
+@app.route('/<int:id>/deleteConvidadoChurras', methods=('POST',))
+def deleteConvidadoChurras(id):
+    convidadoExcluido = get_convidado_unico(id)    
+    idEvento = convidadoExcluido.id_agendamento 
+    db.session.delete(convidadoExcluido)
+    db.session.commit()
+    
+    return redirect(url_for('cadastrar_visitantes_Churras', id = idEvento))
+
+## Rota para adicionar visitantes ao evento
+@app.route('/addVisitanteChurrasqueira/<int:id>' , methods=['GET','POST'])
+def adicionarVisitanteChurras(id):
+    if request.method == 'POST':
+     
+     eventoAtual = get_eventos(id)
+     idEvento =  eventoAtual.id
+     form_nome = request.form['nome'].lower()
+     form_cpf = request.form['cpf'].lower()
+     apartamento = eventoAtual.apartamento
+     
+    if not form_nome:      
+      flash('O Nome é obrigatório!')
+    else: 
+           
+      convidado = ConvidadoEvento(id_agendamento = idEvento, nome = form_nome , cpf = form_cpf ,apartamento = apartamento)
+      db.session.add(convidado)
+      db.session.commit()
+      return redirect(url_for('cadastrar_visitantes_Churras', id = idEvento))         
+    return render_template('cad_con_churrasqueira.html')
+
+
+
+
+
+
+## ROTAS ADMIN
+### ROTA PARA CRIAR USUÁRIOS / MORADORES
+@app.route('/criar', methods=['GET','POST'])
+def cadastrar_usuario():
+    if request.method == 'POST':
+        # Corrigindo os nomes dos campos (devem ser iguais ao "name" no HTML)
+        form_nome = request.form['nome'].lower()
+        form_email = request.form['email'].lower()
+        form_cpf = request.form['cpf']
+        form_ap = request.form['apartamento'] 
+        form_senha = request.form['senha']    
+        form_admin = request.form['usuario']   
+
+        # Validações
+        if not all([form_nome, form_email, form_cpf, form_ap, form_senha, form_admin]):
+            flash('Todos os campos são obrigatórios!', 'error')
+            return render_template('p_cadastrar_morador.html', error="Todos os campos são obrigatórios!")
+        
+        # Verificar se CPF já existe
+        usuario_existente = Usuario.query.filter_by(cpf=form_cpf).first()      
+        if usuario_existente:            
+            flash('CPF já cadastrado no sistema!', 'error')
+            return render_template('p_cadastrar_morador.html', error="CPF Já Cadastrado!")
+        
+        # Verificar se email já existe
+        email_existente = Usuario.query.filter_by(email=form_email).first()
+        if email_existente:
+            flash('Email já cadastrado no sistema!', 'error')
+            return render_template('p_cadastrar_morador.html', error="Email Já Cadastrado!")
+
+        # Criar novo usuário
+        try:
+            novo_usuario = Usuario(
+                cpf=form_cpf, 
+                nome=form_nome, 
+                apartamento=form_ap, 
+                email=form_email, 
+                senha=form_senha, 
+                admin=form_admin
+            )
+            db.session.add(novo_usuario)
+            db.session.commit()
+            flash('Usuário cadastrado com sucesso!', 'success')
+            return redirect(url_for('cadastrar_usuario'))  # Corrigido o nome da função
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao cadastrar usuário: {str(e)}', 'error')
+            return render_template('p_cadastrar_morador.html', error="Erro ao cadastrar usuário")    
+    
+    return render_template('p_cadastrar_morador.html')
+
+### ROTA PARA EXCLUIR USUÁRIOS / MORADORES
+@app.route('/excluir_morador/<int:cpf>', methods=['POST'])
+def excluir_morador(cpf):
+    # Verificar se o usuário atual é admin
+    if session.get('usuario_admin') != 'sim':
+        flash('Apenas administradores podem excluir moradores!', 'error')
+        return redirect(url_for('Cadastrar_moradores'))
+    
+    try:
+        morador = Usuario.query.filter_by(cpf=cpf).first()
+        
+        if morador:
+            # Impedir que o admin exclua a si mesmo
+            if morador.cpf == session.get('usuario_cpf'):
+                flash('Você não pode excluir seu próprio usuário!', 'error')
+                return redirect(url_for('Cadastrar_moradores'))
+            
+            db.session.delete(morador)
+            db.session.commit()
+            flash('Morador excluído com sucesso!', 'success')
+        else:
+            flash('Morador não encontrado!', 'error')
+            
+    except Exception as e:
+        db.session.rollback()
+        flash('Erro ao excluir morador!', 'error')
+    
+    return redirect(url_for('Cadastrar_moradores'))
+
+## ROTA PARA PESQUISAR ACESSO
+@app.route('/pesquisaNome' , methods=['GET','POST'])
+def pesquisaAcesso():    
+    if request.method == 'POST':
+     form_nome = request.form['nome'].strip().lower()
+     morador = Usuario.query.filter_by(nome = form_nome).all()
+    if morador:
+            tipoDeAcesso = 'Morador'
+            return render_template('pesquisar_acessos.html', pessoa = morador , tipoDePessoa = tipoDeAcesso )
+    else:        
+        convidado = ConvidadoEvento.query.filter_by(nome = form_nome).all()
+    if convidado:        
+        tipoDeAcesso = 'Convidado'
+        convidadoEncontrado = ConvidadoEvento.query.filter_by(nome = form_nome).first()
+        eventoEncontrado = Espaco.query.filter_by(id = convidadoEncontrado.id_agendamento).first()
+        return render_template('pesquisar_acessos.html', pessoa = convidado , tipoDePessoa = tipoDeAcesso , evento = eventoEncontrado)                      
+    else:
+        familiar = Familiar.query.filter_by(nome = form_nome ).all()             
+    if familiar:                
+        tipoDeAcesso = 'Familiar'
+        return render_template('pesquisar_acessos.html', pessoa = familiar , tipoDePessoa = tipoDeAcesso )              
+    return render_template('pesquisar_acessos.html', nome=form_nome)
 
 
 
@@ -312,14 +553,8 @@ def cadEventoChurras():
 
 
 
-#Rota para página Churrasqueira
-@app.route('/churrasqueira', methods=['GET', 'POST'])
-def churrasqueira():
-    nome_usuario = session.get('usuario_nome')
-    cpf_morador = session.get('usuario_cpf')
-    familiares = Familiar.query.filter_by(cpf_morador = cpf_morador).all()
-    error = request.args.get('error')
-    return render_template('cad_con_churrasqueira.html', nome=nome_usuario, familiares=familiares , error = error) 
+
+
 
 
 @app.route('/seu-formulario', methods=['GET', 'POST'])
@@ -360,49 +595,30 @@ def get_familiar(familiar_cpf):
         abort(484)
     return familiar
 
+### FUNÇÃO GET EVENTOS
+def get_eventos(id):
+    eventos = Espaco.query.filter_by(id = id).first()
+    if eventos is None:
+        abort(484)
+    return eventos
+
+### FUNÇÃO GET CONVIDADOS   
+def get_convidados(id_agendamento):
+    convidados = ConvidadoEvento.query.filter_by(id_agendamento = id_agendamento).all()
+    if convidados is None:
+        abort(484)
+    return convidados
+
+### FUNÇÃO GET CONVIDADO UNICO  
+def get_convidado_unico(idConvidado):
+    convidadoUnico = ConvidadoEvento.query.filter_by(id_visitante = idConvidado).first()
+    if convidadoUnico is None:
+        abort(484)
+    return convidadoUnico
 
 
 
-
-##### TESTE DE CAPTURA DE DATA
-@app.route('/processar-reserva', methods=['POST'])
-def processar_reserva():
-
-    print("🎯 ROTA /processar-reserva ACESSADA!")    
-    try:
-        if not request.is_json:
-            return jsonify({'error': 'Content-Type must be application/json'}), 400
-        
-        dados = request.get_json()
-        print(f"📄 Dados recebidos: {dados}")
-        
-        data_selecionada = dados.get('data_reserva')
-        
-        if not data_selecionada:
-            return jsonify({'error': 'data_reserva is required'}), 400
-        
-        print(f"🎯 DATA RECEBIDA: {data_selecionada}")
-        
-        # Converter para formato Python
-        data_convertida = data_selecionada.split(' GMT')[0]
-        data_obj = datetime.strptime(data_convertida, '%a %b %d %Y %H:%M:%S')
-        
-        print(f"📅 DATA CONVERTIDA: {data_obj.strftime('%d/%m/%Y')}")
-        
-        return jsonify({
-            'status': 'success', 
-            'message': 'Reserva confirmada!',
-            'data_convertida': data_obj.strftime('%d/%m/%Y')
-        })
-            
-    except Exception as e:
-        print(f"❌ Erro: {e}")
-        return jsonify({'status': 'error', 'message': str(e)}), 400
-    
-    
 
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-    #Fim da rota Recaptcha Google 

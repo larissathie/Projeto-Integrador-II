@@ -13,9 +13,15 @@
 <body>
     <header>
 
+        {% if session.get('usuario_admin') == 'sim' %}
         <div class="imagem_cabecalho">
-            <a href="{{ url_for('pagina_inicial') }}"><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
+        <a href="{{ url_for('pagina_admin') }}"><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
         </div>
+        {% else %}
+        <div class="imagem_cabecalho">
+        <a href="{{ url_for('pagina_inicial') }}"><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
+        </div>
+        {% endif %}
 
          <nav class="nav-menu">
             <div class="nav-group-left">
@@ -53,7 +59,8 @@
             <img src="/static/imagens/icone_salao_festas.png" alt="Ícone representando um salão de festas">
             <h1>Salão de Festas / Cadastrar Convidados</h1>
         </div>
-
+        
+        <form method="POST" action="{{ url_for('adicionarVisitanteSalao', id=evento['id']) }}">
         <div class="container_inputs">
             <div class="campo_nome">
                 <label for="nome">
@@ -70,9 +77,10 @@
             </div>
 
             <div class="botao">
-                <button class="botao_adicionar">Adicionar</button>
+                <button type="submit" class="botao_adicionar">Adicionar</button>
                 <button class="botao_cancelar">Cancelar</button>
             </div>
+        </form>        
         </div>
 
         <div class="bloco-tabela">
@@ -87,12 +95,29 @@
                 <thead class="cabeçalho_tabela">
                     <tr>
                         <th>Nome</th>
-                        <th>CPF</th>
-                        <th>E-mail</th>
-                        <th>Apartamento</th>
-                        <th>Tipo de Usuário</th>
+                        <th>CPF</th>                        
+                        <th>Apartamento</th>                        
                         <th>Ações</th>
                     </tr>
+                    <tbody>
+                        {% for convidado in convidados %}
+                        <tr>
+                            <td>{{ convidado.nome }}</td>
+                            <td>{{ convidado.cpf }}</td>
+                            <td>{{ convidado.apartamento }}</td>
+                            <td>
+
+                                <form action="{{ url_for('deleteConvidadoSalao', id=convidado['id_visitante']) }}" method="POST" 
+                                onsubmit="return confirm('Tem certeza que deseja excluir esse convidado?')">
+                                <button type="submit" class="btn-excluir" style="background: none; border: none; cursor: pointer;">
+                                <img src="/static/imagens/lixeira.png" alt="Excluir convidado">
+                                </button>
+                                </form>                                
+                     
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
                 </thead>
             </table>
         </div>

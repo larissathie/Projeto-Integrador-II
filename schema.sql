@@ -35,7 +35,8 @@ CREATE TABLE visitantes_apartamento (
 CREATE TABLE visitantes_eventos (
     id_visitante INTEGER PRIMARY KEY AUTOINCREMENT,    
     id_agendamento INTEGER NOT NULL,
-    nome TEXT,
-    apartamento TEXT,
+    cpf VARCHAR(11) NOT NULL,
+    nome TEXT NOT NULL,
+    apartamento TEXT NOT NULL,
     FOREIGN KEY (id_agendamento) REFERENCES agendamento_evento(id)
 );

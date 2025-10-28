@@ -11,12 +11,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
     
     <header>
 
+        {% if session.get('usuario_admin') == 'sim' %}
         <div class="imagem_cabecalho">
-            <a href="{{ url_for('pagina_inicial') }}"><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
+        <a href="{{ url_for('pagina_admin') }}"><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
         </div>
+        {% else %}
+        <div class="imagem_cabecalho">
+        <a href="{{ url_for('pagina_inicial') }}"><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
+        </div>
+        {% endif %}
 
         <nav class="nav-menu">
             <div class="nav-group-left">
@@ -29,11 +42,7 @@
                     <div class="dropdown-content">
                         <a href="{{ url_for('cadastrar_familiares') }}">Cadastrar Familiares</a>   
                         <a href="{{ url_for('CadEventoSalao') }}">Salão de Festas</a>  
-                        <a href="{{ url_for('cadEventoChurras') }}">churrasqueira</a>
-                        <!--
-                        <a href="p_agend_salaoF.html">Salão de Festas</a>
-                        <a href="p_agend_churrasqueira.html">churrasqueira</a>
-                        -->
+                        <a href="{{ url_for('cadEventoChurras') }}">churrasqueira</a>                        
                     </div>
                     </div>
                 </div>
@@ -60,27 +69,27 @@
             <img src="/static/imagens/icone_cadastrar.png" alt="Ícone representando o cadastro de Usuário">
             <h1> Cadastrar Morador</h1>
         </div>
-
+        <form id="formCadastro" method="POST" action="/criar">
         <div class="container_inputs">
             <div class="campo_nome">
                 <label for="nome">
                     <span class="obrigatorio">*</span> Nome completo
                 </label>
-                <input type="text" name="nome" required>
+                <input type="text" id="name" name="nome" required>
             </div>
 
             <div class="campo_cpf">
                 <label for="cpf">
                     <span class="obrigatorio">*</span> CPF
                 </label>
-                <input type="number" name="cpf" required>
+                <input type="number" id="cpf" name="cpf" required>
             </div>
 
             <div class="campo_email">
                 <label for="email">
                     <span class="obrigatorio">*</span> Email
                 </label>
-                <input type="email" name="email" required>
+                <input type="email" id="email" name="email" required>
             </div>
         </div>
 
@@ -89,7 +98,7 @@
                 <label for="apartamento">
                     <span class="obrigatorio">*</span> Número do apartamento
                 </label>
-                <input type="number" name="apartamento" required>
+                <input type="number" id="ap" name="apartamento" required>
             </div>
 
             <div class="campo_tipo_usuario">
@@ -97,9 +106,8 @@
                     <span class="obrigatorio">*</span> Tipo de usuário
                 </label>
                 <select name="usuario" required>
-                    <option value="disable select"> Selecione</option>
-                    <option value="Administrador">Administrador</option>
-                    <option value="morador">Morador</option>
+                    <option value="nao">Morador</option>
+                    <option value="sim">Administrador</option>                    
                 </select>
             </div>
 
@@ -107,7 +115,7 @@
                 <label for="senha">
                     <span class="obrigatorio">*</span> Cadastrar Senha
                 </label>
-                <input type="password" name="senha" required>
+                <input type="password" id="password" name="senha" required>
             </div>
         </div>
         <div class="container_3">
@@ -118,10 +126,13 @@
                 </p>
             </div>
             <div class="botao">
-                <button class="botao_adicionar">Adicionar</button>
+                <button type="submit" class="botao_adicionar">Adicionar</button>
+                <!--
                 <button class="botao_cancelar">Cancelar</button>
+                -->
             </div>
         </div>
+        </form>
         
         
 
@@ -136,12 +147,33 @@
                     <th>Ações</th>
                 </tr>
             </thead>
-        </table>
+        
         <tbody>
-            <!--As proximas linhas virão aqui-->
-           
+           {% for morador in moradores %}
+            <tr>
+                <td>{{ morador.nome }}</td>
+                <td>{{ morador.cpf }}</td>
+                <td>{{ morador.email }}</td>
+                <td>{{ morador.apartamento }}</td>
+                <td>
+                    {% if morador.admin == 'sim' %}
+                        Administrador
+                    {% else %}
+                        Morador
+                    {% endif %}
+                </td>
+                <td>                    
+                    <form action="{{ url_for('excluir_morador', cpf=morador.cpf) }}" method="POST" 
+                        onsubmit="return confirm('Tem certeza que deseja excluir este morador?')">
+                        <button type="submit" class="btn-excluir" style="background: none; border: none; cursor: pointer;">
+                        <img src="/static/imagens/lixeira.png" alt="Excluir morador">
+                        </button>
+                    </form>                    
+                </td>
+            </tr>
+            {% endfor %}
         </tbody>
-
+        </table>
 
     </main>
 
