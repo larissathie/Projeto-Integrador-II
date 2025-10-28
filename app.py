@@ -88,8 +88,16 @@ def login():
         session['usuario_nome'] = user.nome
         session['usuario_apartamento'] = user.apartamento #apresenta o nome do usuário no lado direito da tela
         session['usuario_admin'] = user.admin
-        print('2')
-        return redirect(url_for('pagina_inicial')) 
+
+        # Verifica se o usuário é admin
+        if user.admin == 'sim':
+            print('2 - Admin')
+            return redirect(url_for('pagina_admin'))  # Redireciona para página de admin
+        else:
+            print('2 - Usuário normal')
+            return redirect(url_for('pagina_inicial'))  # Redireciona para página normal
+        #print('2')
+        #return redirect(url_for('pagina_inicial')) 
     else:
         print('3')
         return render_template('login.html', error="Usuário ou senha incorretos!")
@@ -102,6 +110,34 @@ def pagina_inicial():
     usuario_apartamento = session.get('usuario_apartamento')
     usuario_admin = session.get('usuario_admin')
     return render_template('pagina_inicial.html', nome=nome_usuario , cpf = usuario_cpf , apartamento = usuario_apartamento, admin = usuario_admin)
+
+#Rota para sucesso do login admin
+@app.route('/pInicial_admin')
+def pagina_admin():
+    nome_usuario = session.get('usuario_nome')
+    usuario_cpf = session.get('usuario_cpf')
+    usuario_apartamento = session.get('usuario_apartamento')
+    usuario_admin = session.get('usuario_admin')
+    return render_template('p_inicial_administrador.html', nome=nome_usuario , cpf = usuario_cpf , apartamento = usuario_apartamento, admin = usuario_admin)
+
+#Rota para cadastro de moradores
+@app.route('/cadastro_moradores')
+def Cadastrar_moradores():
+    nome_usuario = session.get('usuario_nome')
+    usuario_cpf = session.get('usuario_cpf')
+    usuario_apartamento = session.get('usuario_apartamento')
+    usuario_admin = session.get('usuario_admin')
+    moradores = Usuario.query.all()
+    return render_template('p_cadastrar_morador.html', nome=nome_usuario , cpf = usuario_cpf , apartamento = usuario_apartamento, admin = usuario_admin, moradores=moradores)
+
+#Rota para pesquisar acessos
+@app.route('/Pesquisar_acessos')
+def Pesquisa_acessos():
+    nome_usuario = session.get('usuario_nome')
+    usuario_cpf = session.get('usuario_cpf')
+    usuario_apartamento = session.get('usuario_apartamento')
+    usuario_admin = session.get('usuario_admin')
+    return render_template('pesquisar_acessos.html', nome=nome_usuario , cpf = usuario_cpf , apartamento = usuario_apartamento, admin = usuario_admin)
 
 #Rota para página cadastrar familiares
 @app.route('/cadastrar_familiares', methods=['GET', 'POST'])
@@ -336,10 +372,6 @@ def deleteConvidadoSalao(id):
     
     return redirect(url_for('cadastrar_visitantes_Salao', id = idEvento))
 
-
-
-
-
 ## Rota para tela de convidados churrasco
 @app.route('/cad_con_churrasqueira.html/<int:id>')
 def cadastrar_visitantes_Churras(id):
@@ -405,6 +437,108 @@ def adicionarVisitanteChurras(id):
 
 
 
+## ROTAS ADMIN
+### ROTA PARA CRIAR USUÁRIOS / MORADORES
+@app.route('/criar', methods=['GET','POST'])
+def cadastrar_usuario():
+    if request.method == 'POST':
+        # Corrigindo os nomes dos campos (devem ser iguais ao "name" no HTML)
+        form_nome = request.form['nome'].lower()
+        form_email = request.form['email'].lower()
+        form_cpf = request.form['cpf']
+        form_ap = request.form['apartamento'] 
+        form_senha = request.form['senha']    
+        form_admin = request.form['usuario']   
+
+        # Validações
+        if not all([form_nome, form_email, form_cpf, form_ap, form_senha, form_admin]):
+            flash('Todos os campos são obrigatórios!', 'error')
+            return render_template('p_cadastrar_morador.html', error="Todos os campos são obrigatórios!")
+        
+        # Verificar se CPF já existe
+        usuario_existente = Usuario.query.filter_by(cpf=form_cpf).first()      
+        if usuario_existente:            
+            flash('CPF já cadastrado no sistema!', 'error')
+            return render_template('p_cadastrar_morador.html', error="CPF Já Cadastrado!")
+        
+        # Verificar se email já existe
+        email_existente = Usuario.query.filter_by(email=form_email).first()
+        if email_existente:
+            flash('Email já cadastrado no sistema!', 'error')
+            return render_template('p_cadastrar_morador.html', error="Email Já Cadastrado!")
+
+        # Criar novo usuário
+        try:
+            novo_usuario = Usuario(
+                cpf=form_cpf, 
+                nome=form_nome, 
+                apartamento=form_ap, 
+                email=form_email, 
+                senha=form_senha, 
+                admin=form_admin
+            )
+            db.session.add(novo_usuario)
+            db.session.commit()
+            flash('Usuário cadastrado com sucesso!', 'success')
+            return redirect(url_for('cadastrar_usuario'))  # Corrigido o nome da função
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Erro ao cadastrar usuário: {str(e)}', 'error')
+            return render_template('p_cadastrar_morador.html', error="Erro ao cadastrar usuário")    
+    
+    return render_template('p_cadastrar_morador.html')
+
+### ROTA PARA EXCLUIR USUÁRIOS / MORADORES
+@app.route('/excluir_morador/<int:cpf>', methods=['POST'])
+def excluir_morador(cpf):
+    # Verificar se o usuário atual é admin
+    if session.get('usuario_admin') != 'sim':
+        flash('Apenas administradores podem excluir moradores!', 'error')
+        return redirect(url_for('Cadastrar_moradores'))
+    
+    try:
+        morador = Usuario.query.filter_by(cpf=cpf).first()
+        
+        if morador:
+            # Impedir que o admin exclua a si mesmo
+            if morador.cpf == session.get('usuario_cpf'):
+                flash('Você não pode excluir seu próprio usuário!', 'error')
+                return redirect(url_for('Cadastrar_moradores'))
+            
+            db.session.delete(morador)
+            db.session.commit()
+            flash('Morador excluído com sucesso!', 'success')
+        else:
+            flash('Morador não encontrado!', 'error')
+            
+    except Exception as e:
+        db.session.rollback()
+        flash('Erro ao excluir morador!', 'error')
+    
+    return redirect(url_for('Cadastrar_moradores'))
+
+## ROTA PARA PESQUISAR ACESSO
+@app.route('/pesquisaNome' , methods=['GET','POST'])
+def pesquisaAcesso():    
+    if request.method == 'POST':
+     form_nome = request.form['nome'].strip().lower()
+     morador = Usuario.query.filter_by(nome = form_nome).all()
+    if morador:
+            tipoDeAcesso = 'Morador'
+            return render_template('pesquisar_acessos.html', pessoa = morador , tipoDePessoa = tipoDeAcesso )
+    else:        
+        convidado = ConvidadoEvento.query.filter_by(nome = form_nome).all()
+    if convidado:        
+        tipoDeAcesso = 'Convidado'
+        convidadoEncontrado = ConvidadoEvento.query.filter_by(nome = form_nome).first()
+        eventoEncontrado = Espaco.query.filter_by(id = convidadoEncontrado.id_agendamento).first()
+        return render_template('pesquisar_acessos.html', pessoa = convidado , tipoDePessoa = tipoDeAcesso , evento = eventoEncontrado)                      
+    else:
+        familiar = Familiar.query.filter_by(nome = form_nome ).all()             
+    if familiar:                
+        tipoDeAcesso = 'Familiar'
+        return render_template('pesquisar_acessos.html', pessoa = familiar , tipoDePessoa = tipoDeAcesso )              
+    return render_template('pesquisar_acessos.html', nome=form_nome)
 
 
 

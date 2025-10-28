@@ -16,10 +16,15 @@
 <body>
     <header>
 
+        {% if session.get('usuario_admin') == 'sim' %}
         <div class="imagem_cabecalho">
-            <a href="{{ url_for('pagina_inicial') }}"><img src="/static/imagens/logo_header.png"
-                    alt="Logo da empresa Condo Secure"></a>
+        <a href="{{ url_for('pagina_admin') }}"><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
         </div>
+        {% else %}
+        <div class="imagem_cabecalho">
+        <a href="{{ url_for('pagina_inicial') }}"><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
+        </div>
+        {% endif %}
 
         <nav class="nav-menu">
             <div class="nav-group-left">
