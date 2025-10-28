@@ -11,9 +11,15 @@
 <body>
 
     <header>
+        {% if session.get('usuario_admin') == 'sim' %}
         <div class="imagem_cabecalho">
-            <a href="{{ url_for('pagina_inicial') }}"><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
+        <a href="{{ url_for('pagina_admin') }}"><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
         </div>
+        {% else %}
+        <div class="imagem_cabecalho">
+        <a href="{{ url_for('pagina_inicial') }}"><img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" ></a>
+        </div>
+        {% endif %}
         <nav class="navegacao-menu">
             <div class="navegacao-grupo-esquerda">
                 <div class="menu-suspenso">
@@ -47,7 +53,7 @@
            <img src="/static/imagens/icone_acessos.png" alt="Icone de acessos">
            <h1>Acessos</h1>
         </div>
-
+        <form method="POST" action="/pesquisaNome">
         <div class="container-filtros">
             <div class="grupo-formulario">
                 <label for="nome">Nome</label>
@@ -58,24 +64,29 @@
                 <input type="text" id="cpf" name="cpf" placeholder="Digite aqui...">
             </div>
             <div class="grupo-formulario">
-                <label for="categoria">Categoria</label>
+                <!--
+                <label for="categoria">Categoria</label>                
                 <select id="categoria" name="categoria">
                     <option value="">Selecionar...</option>
                     <option value="Administrador">Administrador</option>
                     <option value="Morador">Morador</option>
                     <option value="Visitante">Visitante</option>
                 </select>
+                -->
             </div>
             <div class="botoes-filtro">
-                <button class="btn btn-filtrar">
+                <button type="submit" class="btn btn-filtrar">
                    <img src="/static/imagens/icon_acesso_filtro.png" alt=""> 
                     Filtrar
                 </button>
-                <button class="btn btn-limpar">
+                {#
+                <button  class="btn btn-limpar">
                    <img src="/static/imagens/icon_acesso_limpa.png" alt="">
                     Limpar
                 </button>
+                #}
             </div>
+            </form>
         </div>
 
         <div class="informacao">
@@ -98,7 +109,42 @@
                     <th>Ações</th>
                 </tr>
             </thead>
-              
+                <tbody>
+                {% for pessoas in pessoa %}
+                <tr>
+                    <td>{{ pessoas.nome }}</td>
+                    {% if tipoDePessoa == "Convidado"  %}                    
+                    <td>{{ pessoas.cpf_visitante }}</td> 
+                    {% else %}
+                    <td>{{ pessoas.cpf }}</td>
+                    {% endif %}
+                    <td>{{ pessoas.email }}</td> 
+                    <td>{{ pessoas.apartamento }}</td>
+                    <td>
+                        {% if pessoas.admin == 'sim' %}
+                            Administrador
+                        {% else %}
+                            Morador
+                        {% endif %}
+                    </td>                    
+                    
+                    {% if tipoDePessoa == "Convidado"  %}
+                    <td>{{ evento.ambientes }}</td>
+                    <td>{{ evento.data }}</td>
+                    {% endif %}
+                    <td>
+                        {#
+                        <form action="{{ url_for('excluir_morador', cpf=morador.cpf) }}" method="POST" 
+                            onsubmit="return confirm('Tem certeza que deseja excluir este morador?')">
+                            <button type="submit" class="btn-excluir" style="background: none; border: none; cursor: pointer;">
+                            <img src="/static/imagens/lixeira.png" alt="Excluir morador">
+                            </button>
+                        </form>
+                        #}                                      
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>  
         </table>
     </main>
     
