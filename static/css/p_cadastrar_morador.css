@@ -323,22 +323,23 @@ header {
 
 .container_3 {
     display: flex;
+    justify-content: space-between;   /* texto à esquerda, botão à direita */
     align-items: center;
-    justify-content: space-between;
-    margin-right: 100px;
-    
+    width: clamp(320px, 92vw, 1450px);/* mesma largura da tabela */
+    margin: 10px auto 0;              /* centraliza na página */
+    padding: 0 1rem;                  /* pequeno respiro nas bordas */
+    gap: 1rem;
+    box-sizing: border-box;
 }
                 /*Mensagem de informação */
 .informacao {
     display: flex;
     align-items: center;
-    margin-top: 10px;
-    margin-left: 30px;
 }
 
 .informacao img {
     width: 30px;
-    vertical-align: middle; 
+    margin-right: 8px;
 }
 
 .informacao p {
@@ -346,19 +347,15 @@ header {
     font-weight: bold;
 }
 
-.botao {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
 .botao_adicionar {
     background-color: #13062E;
     color: #fff;
     font-weight: bold;
-    width: 92px;
     height: 32px;
     border-radius: 8px;
+    padding: 0 16px;      /* melhor que largura fixa para ficar fluido */
+    cursor: pointer;
+    white-space: nowrap;  /* não quebrar o texto */
 }
 
 .botao_cancelar {
@@ -372,13 +369,9 @@ header {
 
                  /*Tabela*/ 
 .tabela {
-    width: 1450px;
-    max-height: 55px;
-    margin: 0 auto;
+    width: clamp(320px, 92vw, 1450px);
+    margin: 20px auto 50px;
     border-collapse: collapse;
-    margin-top: 20px;
-    margin-bottom: 50px;
-    justify-content: center;
 }
 
 .cabeçalho_tabela th {
@@ -459,7 +452,7 @@ main, .conteudo {
   margin-bottom: auto; /* ajuste conforme a altura real do footer */
 }
 
-/* responsividade */
+/* --- Responsividade do rodapé --- */
 @media (max-width: 900px) {
   .imagem_rodape { flex: 0 0 220px; }
   .dados_rodape { max-width: 520px; gap: 16px; }
@@ -477,6 +470,20 @@ main, .conteudo {
   .email_rodape, .localizacao_rodape { max-width: 95%; text-align: center; }
   main, .conteudo { margin-bottom: 220px; }
 }
+
+/* --- Responsividade da mensagem e botão acima da tabela --- */
+@media (max-width: 768px) {
+  .container_3 {
+    flex-direction: column;
+    align-items: stretch;     /* ocupa toda a largura disponível */
+    gap: 12px;
+  }
+  .botao_adicionar {
+    align-self: flex-end;     /* mantém o botão alinhado à direita */
+    max-width: 220px;
+  }
+}
+
 
 
 

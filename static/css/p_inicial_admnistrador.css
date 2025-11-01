@@ -301,7 +301,7 @@ header {
   justify-content: center;   /* centraliza tudo no meio */
   align-items: flex-start;   /* alinha os cards pelo topo */
   gap: 40px;                 /* espaço entre os cards */
-  margin-top: 5px;          /* afastar do topo, se quiser */
+  margin-top: 68px;           /* espaço superior comum */
   margin-bottom: 50px;
 }
 
@@ -309,7 +309,6 @@ header {
 .container_familiares {
   display: flex;
   margin-left: 35px;
-  margin-top: 68px;
 }
 
 .card_acesso {
@@ -371,7 +370,6 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 68px;
 }
 
 .card_festas {
@@ -431,7 +429,6 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 68px;
 }
 
 .card_churrasqueira {
