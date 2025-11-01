@@ -1,20 +1,16 @@
-
-from flask import Flask, render_template, request,url_for,flash, session, redirect, url_for ,jsonify
-import os, datetime  
-import requests
-import sqlite3
-from flask_sqlalchemy import SQLAlchemy
-from flask import session
+from flask import Flask, render_template, request, url_for, flash, session, redirect, jsonify
+import os
 from datetime import datetime
-#from flask_cors import CORS
+import requests
+from flask_sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import abort
+from dotenv import load_dotenv
 
-project_dir = os.path.dirname(os.path.abspath(__file__))
-database_file = "sqlite:///{}".format(os.path.join(project_dir,"database.db"))
+load_dotenv()  # Carrega o .env
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your secret key'
-app.config['SQLALCHEMY_DATABASE_URI'] = database_file
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")  # string do Neon (com sslmode=require)
 db = SQLAlchemy(app)
 
 # Carregue a variável de ambiente (instale python-dotenv)
@@ -63,6 +59,9 @@ class Espaco(db.Model):
     apartamento = db.Column(db.String(10), nullable=False)
     convidados = db.relationship('ConvidadoEvento', backref='evento', cascade='all, delete-orphan')
 ## Fim da classe de banco de dados
+
+with app.app_context():
+    db.create_all()
 
 #Rotas para as páginas
 @app.route('/')

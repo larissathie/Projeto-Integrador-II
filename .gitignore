@@ -1,0 +1,19 @@
+# Banco de dados local
+database.db
+*.db
+
+# Bytecode e cache
+__pycache__/
+*.pyc
+
+# Cobertura de testes
+.coverage
+pytest_cache/
+
+# Ambiente virtual
+venv/
+
+# Arquivos temporários do VSCode
+.vscode/
+
+.env
