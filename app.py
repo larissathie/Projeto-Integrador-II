@@ -196,7 +196,6 @@ def delete(cpf):
     db.session.commit()    
     return redirect(url_for('cadastrar_familiares'))
 
-
 #Rota para página salão de festas
 @app.route('/salaoDeFestas', methods=['GET', 'POST'])
 def salaoDeFestas():
@@ -295,7 +294,6 @@ def churrasqueira():
     error = request.args.get('error')
     return render_template('cad_con_churrasqueira.html', nome=nome_usuario, familiares=familiares , error = error) 
 
-
 ###ROTA PARA CADASTRO DE EVENTO CHURRASQUEIRA
 @app.route('/cadastro_churrasqueira', methods=['GET', 'POST'])
 def cadEventoChurras():
@@ -365,7 +363,6 @@ def cadEventoChurras():
                          todosEventos=todosEventos,
                          error=error)
 
-
 ## ROTA PARA DELETAR EVENTO
 @app.route('/evento/<int:id>/deleteChurras', methods=('POST',))
 def deleteEventoChurras(id):   
@@ -380,7 +377,9 @@ def deleteEventoChurras(id):
 def cadastrar_visitantes_Salao(id):
     eventoCarregado = get_eventos(id) 
     convidadosCarregados = get_convidados(id)
-    return render_template('cad_con_salaoF.html', evento = eventoCarregado , convidados = convidadosCarregados)
+    nome = session.get('usuario_nome')
+
+    return render_template('cad_con_salaoF.html', evento = eventoCarregado , convidados = convidadosCarregados , nome=nome)
 
 ## ROTA PARA DELETAR CONVIDADO SALÃO
 @app.route('/<int:id>/deleteConvidadoSalao', methods=('POST',))
@@ -397,8 +396,8 @@ def deleteConvidadoSalao(id):
 def cadastrar_visitantes_Churras(id):
     eventoCarregado = get_eventos(id) 
     convidadosCarregados = get_convidados(id)
-    return render_template('cad_con_churrasqueira.html', evento = eventoCarregado , convidados = convidadosCarregados)
-
+    nome = session.get('usuario_nome')
+    return render_template('cad_con_churrasqueira.html', evento = eventoCarregado , convidados = convidadosCarregados, nome=nome)
 
 ## Rota para adicionar visitantes ao evento
 @app.route('/addVisitanteSalao/<int:id>' , methods=['GET','POST'])
@@ -452,12 +451,10 @@ def adicionarVisitanteChurras(id):
       return redirect(url_for('cadastrar_visitantes_Churras', id = idEvento))         
     return render_template('cad_con_churrasqueira.html')
 
-
 ### ROTA PARA CRIAR USUÁRIOS / MORADORES
 @app.route('/criar', methods=['GET','POST'])
 def cadastrar_usuario():
-    if request.method == 'POST':
-        # Corrigindo os nomes dos campos (devem ser iguais ao "name" no HTML)
+    if request.method == 'POST':        
         form_nome = request.form['nome'].lower()
         form_email = request.form['email'].lower()
         form_cpf = request.form['cpf']
@@ -468,32 +465,31 @@ def cadastrar_usuario():
         # Validações
         if not all([form_nome, form_email, form_cpf, form_ap, form_senha, form_admin]):
             flash('Todos os campos são obrigatórios!', 'error')
-            return render_template('p_cadastrar_morador.html', error="Todos os campos são obrigatórios!")
+            return redirect(url_for('Cadastrar_moradores'))
         
-        # ✅ CORREÇÃO: Converter CPF para int e validar
+        # Converte CPF para int e validar
         try:
             cpf_int = int(form_cpf)
         except ValueError:
             flash('CPF deve conter apenas números!', 'error')
-            return render_template('p_cadastrar_morador.html', error="CPF deve conter apenas números!")
+            return redirect(url_for('Cadastrar_moradores'))
 
-        # ✅ CORREÇÃO: Usar cpf_int na consulta
+        # Usar cpf_int na consulta
         usuario_existente = Usuario.query.filter_by(cpf=cpf_int).first()      
         if usuario_existente:            
             flash('CPF já cadastrado no sistema!', 'error')
-            return render_template('p_cadastrar_morador.html', error="CPF Já Cadastrado!")
+            return redirect(url_for('Cadastrar_moradores'))
         
         # Verificar se email já existe
         email_existente = Usuario.query.filter_by(email=form_email).first()
         if email_existente:
             flash('Email já cadastrado no sistema!', 'error')
-            return render_template('p_cadastrar_morador.html', error="Email Já Cadastrado!")
-
-        # ✅ CORREÇÃO: Usar cpf_int na criação do usuário
+            return redirect(url_for('Cadastrar_moradores'))
+        
         # Criar novo usuário
         try:
             novo_usuario = Usuario(
-                cpf=cpf_int,  # ✅ AGORA É INT
+                cpf=cpf_int, 
                 nome=form_nome, 
                 apartamento=form_ap, 
                 email=form_email, 
@@ -503,16 +499,13 @@ def cadastrar_usuario():
             db.session.add(novo_usuario)
             db.session.commit()
             flash('Usuário cadastrado com sucesso!', 'success')
-            return redirect(url_for('cadastrar_usuario'))
+            return redirect(url_for('Cadastrar_moradores'))
         except Exception as e:
             db.session.rollback()
             flash(f'Erro ao cadastrar usuário: {str(e)}', 'error')
-            return render_template('p_cadastrar_morador.html', error="Erro ao cadastrar usuário")    
+            return redirect(url_for('Cadastrar_moradores'))
     
-    return render_template('p_cadastrar_morador.html')
-
-
-
+    return redirect(url_for('Cadastrar_moradores'))
 
 ### ROTA PARA EXCLUIR USUÁRIOS / MORADORES
 @app.route('/excluir_morador/<int:cpf>', methods=['POST'])
@@ -545,7 +538,8 @@ def excluir_morador(cpf):
 
 ## ROTA PARA PESQUISAR ACESSO
 @app.route('/pesquisaNome', methods=['GET','POST'])
-def pesquisaAcesso():    
+def pesquisaAcesso():
+    nome = session.get('usuario_nome')   
     if request.method == 'POST':
         form_nome = request.form['nome'].strip().lower() if request.form['nome'] else None
         form_cpf = request.form['cpf'].strip() if request.form['cpf'] else None
@@ -553,7 +547,7 @@ def pesquisaAcesso():
         # Se ambos os campos estão vazios
         if not form_nome and not form_cpf:
             flash('Preencha pelo menos um campo para pesquisar!', 'error')
-            return render_template('pesquisar_acessos.html')
+            return render_template('pesquisar_acessos.html', nome=nome)
         
         # Pesquisa por CPF (tem prioridade)
         if form_cpf:
@@ -569,7 +563,7 @@ def pesquisaAcesso():
                 # Buscar em Familiares
                 familiar = Familiar.query.filter_by(cpf_visitante=cpf_int).all()
                 if familiar:
-                    tipoDeAcesso = 'Familiar'
+                    tipoDeAcesso = 'Visitante'
                     return render_template('pesquisar_acessos.html', pessoa=familiar, tipoDePessoa=tipoDeAcesso)
                 
                 # Buscar em Convidados (CPF é string aqui)
@@ -578,11 +572,11 @@ def pesquisaAcesso():
                     tipoDeAcesso = 'Convidado'
                     convidadoEncontrado = convidado[0] if convidado else None
                     eventoEncontrado = Espaco.query.filter_by(id=convidadoEncontrado.id_agendamento).first() if convidadoEncontrado else None
-                    return render_template('pesquisar_acessos.html', pessoa=convidado, tipoDePessoa=tipoDeAcesso, evento=eventoEncontrado)
+                    return render_template('pesquisar_acessos.html', pessoa=convidado, tipoDePessoa=tipoDeAcesso, evento=eventoEncontrado, nome=nome)
                     
             except ValueError:
                 flash('CPF deve conter apenas números!', 'error')
-                return render_template('pesquisar_acessos.html')
+                return render_template('pesquisar_acessos.html', nome=nome)
         
         # Pesquisa por NOME (se CPF não foi preenchido ou não encontrou)
         if form_nome:
@@ -590,7 +584,7 @@ def pesquisaAcesso():
             morador = Usuario.query.filter(Usuario.nome.ilike(f'%{form_nome}%')).all()
             if morador:
                 tipoDeAcesso = 'Morador'
-                return render_template('pesquisar_acessos.html', pessoa=morador, tipoDePessoa=tipoDeAcesso)
+                return render_template('pesquisar_acessos.html', pessoa=morador, tipoDePessoa=tipoDeAcesso, nome=nome)
             
             # Buscar em Convidados
             convidado = ConvidadoEvento.query.filter(ConvidadoEvento.nome.ilike(f'%{form_nome}%')).all()
@@ -598,19 +592,19 @@ def pesquisaAcesso():
                 tipoDeAcesso = 'Convidado'
                 convidadoEncontrado = convidado[0] if convidado else None
                 eventoEncontrado = Espaco.query.filter_by(id=convidadoEncontrado.id_agendamento).first() if convidadoEncontrado else None
-                return render_template('pesquisar_acessos.html', pessoa=convidado, tipoDePessoa=tipoDeAcesso, evento=eventoEncontrado)
+                return render_template('pesquisar_acessos.html', pessoa=convidado, tipoDePessoa=tipoDeAcesso, evento=eventoEncontrado, nome=nome)
             
             # Buscar em Familiares
             familiar = Familiar.query.filter(Familiar.nome.ilike(f'%{form_nome}%')).all()
             if familiar:
-                tipoDeAcesso = 'Familiar'
-                return render_template('pesquisar_acessos.html', pessoa=familiar, tipoDePessoa=tipoDeAcesso)
+                tipoDeAcesso = 'Visitante'
+                return render_template('pesquisar_acessos.html', pessoa=familiar, tipoDePessoa=tipoDeAcesso, nome=nome)
         
         # Se não encontrou nada
         flash('Nenhum resultado encontrado!', 'error')
-        return render_template('pesquisar_acessos.html')
+        return render_template('pesquisar_acessos.html', nome=nome)
     
-    return render_template('pesquisar_acessos.html')
+    return render_template('pesquisar_acessos.html', nome=nome)
 
 @app.route('/seu-formulario', methods=['GET', 'POST'])
 def handle_form():
@@ -670,8 +664,6 @@ def get_convidado_unico(idConvidado):
     if convidadoUnico is None:
         abort(484)
     return convidadoUnico
-
-
 
 
 

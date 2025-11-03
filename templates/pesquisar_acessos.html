@@ -37,7 +37,7 @@
                 <span class="separador">/</span>
                 <span class="link-navegacao link-usuario">
                     <img src="/static/imagens/icone_usuario.png" alt="Ícone do usuário">
-                    {{ nome|title if nome else 'Visitante'}}
+                    {{ nome|title if nome else 'Admin'}}
                 </span>
             </div>
             <div class="icone_sair">
@@ -100,48 +100,77 @@
             <thead>
                 <tr>
                     <th>Nome</th>
-                    <th>CPF</th>
-                    <th>E-mail</th>
+                    {% if tipoDePessoa != "Convidado" %}                     
+                    <th>CPF</th>                    
+                    {% if tipoDePessoa != "Visitante" %}
+                    <th>E-mail</th> 
+                    {% endif %}                       
+                    {% endif %}
                     <th>Apartamento</th>
                     <th>Tipo de Usuário</th>
+                    {% if tipoDePessoa == "Convidado"  %} 
                     <th>Evento</th>
                     <th>Data do Evento</th>
+                    {% endif %}
+                    <!--
                     <th>Ações</th>
+                    -->
                 </tr>
             </thead>
                 <tbody>
                 {% for pessoas in pessoa %}
                 <tr>
-                    <td>{{ pessoas.nome }}</td>
-                    {% if tipoDePessoa == "Convidado"  %}                    
+                    <td>{{ pessoas.nome }}</td>                    
+                    {% if tipoDePessoa == "Convidado" %}                    
+                    <!--
                     <td>{{ pessoas.cpf_visitante }}</td> 
+                    -->
                     {% else %}
-                    <td>{{ pessoas.cpf }}</td>
+                        {% if tipoDePessoa == "Visitante" %}
+                        <td>{{ pessoas.cpf_visitante }}</td>
+                        {% else %}
+                        <td>{{ pessoas.cpf }}</td>
+                        {% endif %}
                     {% endif %}
-                    <td>{{ pessoas.email }}</td> 
+                    {% if tipoDePessoa != "Convidado" and tipoDePessoa != "Visitante"  %}
+                    <td>{{ pessoas.email }}</td>                     
+                    {% endif %}
                     <td>{{ pessoas.apartamento }}</td>
                     <td>
-                        {% if pessoas.admin == 'sim' %}
-                            Administrador
+                        {% if tipoDePessoa == "Convidado" %}
+                            Convidado
                         {% else %}
-                            Morador
+                            {% if pessoas.admin == 'sim' %}
+                                Administrador
+                            {% else %}
+                                {% if tipoDePessoa == "Convidado"  %}  
+                                Convidado
+                                {% endif %}
+                                {% if tipoDePessoa == "Morador"  %}  
+                                Morador
+                                {% endif %}
+                                {% if tipoDePessoa == "Visitante"  %}  
+                                Visitante
+                                {% endif %}
+                            {% endif %}
                         {% endif %}
                     </td>                    
-                    
-                    {% if tipoDePessoa == "Convidado"  %}
+                    {% if tipoDePessoa == "Convidado"  %}                    
                     <td>{{ evento.ambientes }}</td>
                     <td>{{ evento.data }}</td>
                     {% endif %}
+                    {#
                     <td>
-                        {#
+                        
                         <form action="{{ url_for('excluir_morador', cpf=morador.cpf) }}" method="POST" 
                             onsubmit="return confirm('Tem certeza que deseja excluir este morador?')">
                             <button type="submit" class="btn-excluir" style="background: none; border: none; cursor: pointer;">
                             <img src="/static/imagens/lixeira.png" alt="Excluir morador">
                             </button>
                         </form>
-                        #}                                      
+                                                             
                     </td>
+                    #} 
                 </tr>
                 {% endfor %}
             </tbody>  
@@ -157,7 +186,7 @@
             <div class="dados_rodape">
                 <div class="email_rodape">
                     <h3>Email</h3>
-                    <p>email@univesp.com.br</p>
+                    <p>grupopiunivespsala6grupo7@gmail.com</p>
                 </div>
                 <div class="localizacao_rodape">
                     <p>Localização</p>
