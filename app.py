@@ -24,7 +24,7 @@ GOOGLE_RECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
 ## Classes do banco de dados
 class Usuario(db.Model):
     __tablename__ = 'moradores'
-    cpf = db.Column(db.Integer, primary_key=True)
+    cpf = db.Column(db.BigInteger, primary_key=True)
     nome = db.Column(db.String(50), nullable=False)
     apartamento = db.Column(db.String(10), nullable=False)
     email = db.Column(db.String(100), nullable=False)
@@ -33,8 +33,8 @@ class Usuario(db.Model):
 
 class Familiar(db.Model):
     __tablename__ = 'visitantes_apartamento'
-    cpf_visitante = db.Column(db.Integer, primary_key=True)
-    cpf_morador = db.Column(db.Integer, db.ForeignKey('moradores.cpf'), nullable=False)
+    cpf_visitante = db.Column(db.BigInteger, primary_key=True)
+    cpf_morador = db.Column(db.BigInteger, db.ForeignKey('moradores.cpf'), nullable=False)
     nome = db.Column(db.String(50), nullable=False)
     apartamento = db.Column(db.String(10), nullable=False)
 
@@ -147,20 +147,30 @@ def cadastrar_familiares():
     error = request.args.get('error')
     return render_template('p_cadastrar_familiares.html', nome=nome_usuario, familiares=familiares , error = error) 
 
-# Rota para adicionar familiar (CORRIGIDA)
+# Rota para adicionar familiar (CORRIGIDA PARA BIGINT)
 @app.route('/addFamiliar', methods=['GET','POST'])
 def adicionarFamiliar():      
     if request.method == 'POST':     
         form_nome = request.form['nome'].lower()
         form_cpf = request.form['cpf']
-        form_cpfMorador = session.get('usuario_cpf')  # Já deve ser int da session
+        form_cpfMorador = session.get('usuario_cpf')  # Já deve ser BIGINT da session
         form_ap = session.get('usuario_apartamento')     
         
-        # ✅ CORREÇÃO: Converter CPF para int
+        # ✅ VALIDAÇÃO: Verificar se CPF tem 11 dígitos ANTES de converter
+        if len(form_cpf) != 11 or not form_cpf.isdigit():
+            flash('CPF deve conter exatamente 11 números!', 'error')
+            return redirect(url_for('cadastrar_familiares'))
+        
+        # ✅ CORREÇÃO: Converter CPF para BIGINT
         try:
-            cpf_visitante_int = int(form_cpf)
+            cpf_visitante_int = int(form_cpf)  # ✅ Agora funciona com BIGINT
         except ValueError:
             flash('CPF do familiar deve conter apenas números!', 'error')
+            return redirect(url_for('cadastrar_familiares'))
+
+        # ✅ VALIDAÇÃO ADICIONAL: Garantir que é um CPF válido
+        if cpf_visitante_int < 10000000000 or cpf_visitante_int > 99999999999:
+            flash('CPF inválido!', 'error')
             return redirect(url_for('cadastrar_familiares'))
         
         # ✅ CORREÇÃO: Usar cpf_visitante_int na consulta
@@ -178,7 +188,7 @@ def adicionarFamiliar():
             familiar = Familiar(
                 nome=form_nome,
                 cpf_morador=form_cpfMorador, 
-                cpf_visitante=cpf_visitante_int,  # AGORA É INT
+                cpf_visitante=cpf_visitante_int,  # ✅ AGORA É BIGINT
                 apartamento=form_ap
             )
             db.session.add(familiar)
@@ -499,11 +509,21 @@ def cadastrar_usuario():
             flash('Todos os campos são obrigatórios!', 'error')
             return redirect(url_for('Cadastrar_moradores'))
         
-        # Converte CPF para int e validar
+        # ✅ VALIDAÇÃO: Verificar se CPF tem 11 dígitos ANTES de converter
+        if len(form_cpf) != 11 or not form_cpf.isdigit():
+            flash('CPF deve conter exatamente 11 números!', 'error')
+            return redirect(url_for('Cadastrar_moradores'))
+        
+        # Converte CPF para int (BIGINT)
         try:
-            cpf_int = int(form_cpf)
+            cpf_int = int(form_cpf)  # ✅ Agora funciona com CPFs grandes
         except ValueError:
             flash('CPF deve conter apenas números!', 'error')
+            return redirect(url_for('Cadastrar_moradores'))
+
+        # ✅ VALIDAÇÃO ADICIONAL: Garantir que é um CPF válido (opcional)
+        if cpf_int < 10000000000 or cpf_int > 99999999999:
+            flash('CPF inválido!', 'error')
             return redirect(url_for('Cadastrar_moradores'))
 
         # Usar cpf_int na consulta
@@ -521,7 +541,7 @@ def cadastrar_usuario():
         # Criar novo usuário
         try:
             novo_usuario = Usuario(
-                cpf=cpf_int, 
+                cpf=cpf_int,  # ✅ Agora é BIGINT
                 nome=form_nome, 
                 apartamento=form_ap, 
                 email=form_email, 
