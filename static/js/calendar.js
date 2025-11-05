@@ -110,15 +110,15 @@ confirmarReserva.addEventListener('click', () => {
     const selectedDay = document.querySelector('.selected');
     const dataSelecionada = selectedDay.getAttribute('day'); // ← Declarar novamente ou usar a de cima
     
-    popupReserva.style.display = 'none';
-    alert('Reserva confirmada com sucesso!');
+    //popupReserva.style.display = 'none';
+    //alert('Reserva confirmada com sucesso!');
     
     // ✅ CORRETO - sem typo:
     enviarReservaParaBackend(dataSelecionada); // ← "dataSelecionada" não "dataselecionada"
 });
 
 // Função para enviar para o backEnd
-
+/*
 function enviarReservaParaBackend(dataSelecionada) {
     console.log("🔍 Iniciando agendamento...");
     
@@ -153,8 +153,41 @@ function enviarReservaParaBackend(dataSelecionada) {
         console.error("❌ Erro completo:", error);
         alert('Erro ao agendar: ' + error.message);
     });
-}
+}*/
 
+function enviarReservaParaBackend(dataSelecionada) {
+    console.log("🔍 Iniciando agendamento...");
+    
+    let rota = '';
+    if (AMBIENTE_ATUAL === 'salao') {
+        rota = '/cadastro_Salao';
+    } else if (AMBIENTE_ATUAL === 'churrasqueira') {
+        rota = '/cadastro_churrasqueira';
+    }
+    
+    fetch(rota, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({data_reserva: dataSelecionada})
+    })
+    .then(response => response.json()) // SEMPRE tenta converter para JSON
+    .then(data => {
+        console.log("📨 Resposta completa:", data);
+        
+        if (data.status === 'success') {
+            console.log("✅ Sucesso:", data);
+            alert(data.message);
+            setTimeout(() => { window.location.reload(); }, 1000);
+        } else {
+            console.log("❌ Erro do backend:", data);
+            throw new Error(data.message || 'Erro desconhecido');
+        }
+    })
+    .catch(error => {
+        console.error("❌ Erro completo:", error);
+        alert('Erro ao agendar: ' + error.message);
+    });
+}
 
 // Cancelar reserva
 cancelarReserva.addEventListener('click', () => {
