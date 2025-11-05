@@ -209,7 +209,7 @@ def salaoDeFestas():
     error = request.args.get('error')
     return render_template('cad_con_salaoF.html', nome=nome_usuario, familiares=familiares, eventos = eventos , todosEventos = todosEventos, error = error) 
 
-### Cadastrar evento salão
+#Rota para cadastro de evento no salão
 @app.route('/cadastro_Salao', methods=['GET', 'POST'])
 def CadEventoSalao():
     nome_usuario = session.get('usuario_nome')
@@ -218,38 +218,41 @@ def CadEventoSalao():
     error = request.args.get('error')
     eventos = Espaco.query.filter_by(cpf_morador=cpf_morador).all()
     todosEventos = Espaco.query.filter(
-    Espaco.ambientes == 'salao de festas',
-    Espaco.data >= datetime.now()
-).order_by(Espaco.data.asc()).all()
+        Espaco.ambientes == 'salao de festas',
+        Espaco.data >= datetime.now()
+    ).order_by(Espaco.data.asc()).all()
 
-    # SE FOR POST (só vai vir do JavaScript)
     if request.method == 'POST':
         try:
-            # Sempre vem como JSON do JavaScript
             dados = request.get_json()
             data_selecionada = dados.get('data_reserva')
-            
-            print(f"🎯 DADOS DO JAVASCRIPT:")
-            print(f"👤 Usuário: {nome_usuario}")
-            print(f" Apartamento: {ap_morador}")
-            print(f"📅 Data: {data_selecionada}")
             
             if data_selecionada:
                 # Converter data
                 data_convertida = data_selecionada.split(' GMT')[0]
                 data_obj = datetime.strptime(data_convertida, '%a %b %d %Y %H:%M:%S')
                 
-                print(f"📅 DATA CONVERTIDA: {data_obj.strftime('%d/%m/%Y')}")
+                # VERIFICAR SE JÁ EXISTE EVENTO NESTA DATA
+                evento_existente = Espaco.query.filter(
+                    Espaco.ambientes == 'salao de festas',
+                    Espaco.data == data_obj
+                ).first()
+                
+                if evento_existente:
+                    return jsonify({
+                        'status': 'error', 
+                        'message': f'Já existe um evento agendado para {data_obj.strftime("%d/%m/%Y")}!'
+                    }), 400
                 
                 # SALVAR NO BANCO
                 novo_evento = Espaco(
-                     nome = nome_usuario,
-                     cpf_morador=cpf_morador,
-                     data=data_obj,
-                     local = 1,
-                     ambientes = 'salao de festas',
-                     apartamento=ap_morador
-                    )
+                    nome=nome_usuario,
+                    cpf_morador=cpf_morador,
+                    data=data_obj,
+                    local=1,
+                    ambientes='salao de festas',
+                    apartamento=ap_morador
+                )
                 
                 db.session.add(novo_evento)
                 db.session.commit()               
@@ -261,20 +264,17 @@ def CadEventoSalao():
                 })
             else:
                 return jsonify({'status': 'error', 'message': 'Data não selecionada'}), 400
-            
                 
         except Exception as e:
             print(f"❌ Erro: {e}")
             return jsonify({'status': 'error', 'message': str(e)}), 400
-            
     
-    # SE FOR GET (mostrar a página)
     return render_template('p_agend_salaoF.html',
                          nome=nome_usuario, 
                          cpf=cpf_morador, 
                          apartamento=ap_morador, 
                          eventos=eventos, 
-                         todosEventos=todosEventos, 
+                         todosEventos=todosEventos,
                          error=error)
 
 ## ROTA PARA DELETAR EVENTO
@@ -294,7 +294,7 @@ def churrasqueira():
     error = request.args.get('error')
     return render_template('cad_con_churrasqueira.html', nome=nome_usuario, familiares=familiares , error = error) 
 
-###ROTA PARA CADASTRO DE EVENTO CHURRASQUEIRA
+### ROTA PARA CADASTRO DE EVENTO CHURRASQUEIRA
 @app.route('/cadastro_churrasqueira', methods=['GET', 'POST'])
 def cadEventoChurras():
     nome_usuario = session.get('usuario_nome')
@@ -326,6 +326,38 @@ def cadEventoChurras():
             if data_selecionada:
                 data_convertida = data_selecionada.split(' GMT')[0]
                 data_obj = datetime.strptime(data_convertida, '%a %b %d %Y %H:%M:%S')
+                
+                # 🔥 VERIFICAR SE JÁ EXISTE CHURRASQUEIRA NESTA DATA
+                evento_existente = Espaco.query.filter(
+                    Espaco.ambientes == 'churrasqueira',
+                    Espaco.data == data_obj
+                ).first()
+                
+                if evento_existente:
+                    return jsonify({
+                        'status': 'error', 
+                        'message': f'Já existe uma churrasqueira agendada para {data_obj.strftime("%d/%m/%Y")}!'
+                    }), 400
+                
+                # 🔥 VERIFICAÇÃO OPCIONAL: Usuário já tem churrasqueira agendada?
+                churras_usuario = Espaco.query.filter(
+                    Espaco.ambientes == 'churrasqueira',
+                    Espaco.cpf_morador == cpf_morador,
+                    Espaco.data >= datetime.now()
+                ).first()
+                
+                if churras_usuario:
+                    return jsonify({
+                        'status': 'error', 
+                        'message': 'Você já possui uma churrasqueira agendada!'
+                    }), 400
+                
+                # 🔥 VERIFICAR SE A DATA NÃO É NO PASSADO
+                if data_obj < datetime.now():
+                    return jsonify({
+                        'status': 'error', 
+                        'message': 'Não é possível agendar para datas passadas!'
+                    }), 400
                 
                 # ✅ SALVAR COMO CHURRASQUEIRA
                 novo_evento = Espaco(
