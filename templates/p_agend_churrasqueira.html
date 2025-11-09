@@ -146,10 +146,10 @@
                             <td>          
                                 {% if evento.apartamento == apartamento %}                      
                                 <div style="display: flex; gap: 10px; align-items: center;">
-                                    <a href="{{ url_for('cadastrar_visitantes_Salao', id = evento['id']) }}">
+                                    <a href="{{ url_for('cadastrar_visitantes_Churras', id = evento['id']) }}">
                                         <img src="/static/imagens/usuarios.png" alt="icone de usuário">
                                     </a>                                
-                                    <form action="{{ url_for('deleteEventoSalao', id=evento['id']) }}" method="POST" 
+                                    <form action="{{ url_for('deleteEventoChurras', id=evento['id']) }}" method="POST" 
                                         onsubmit="return confirm('Tem certeza que deseja apagar esse evento?')">
                                         <button type="submit" class="btn-excluir" style="background: none; border: none; cursor: pointer;">
                                             <img src="/static/imagens/lixeira.png" alt="imagem de uma lixeira">

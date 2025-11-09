@@ -3,8 +3,10 @@ import os
 from datetime import datetime
 import requests
 from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail, Message
 from werkzeug.exceptions import abort
 from dotenv import load_dotenv
+from werkzeug.exceptions import abort
 
 load_dotenv()  # Carrega o .env
 
@@ -12,6 +14,37 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your secret key'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")  # string do Neon (com sslmode=require)
 db = SQLAlchemy(app)
+
+
+
+##Sistema de email para ajuda
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'grupopiunivespsala6grupo7@gmail.com'  
+app.config['MAIL_PASSWORD'] = 'xxhchiyjtzalvbgs'  
+app.config['MAIL_DEFAULT_SENDER'] = 'grupopiunivespsala6grupo7@gmail.com'
+
+mail = Mail(app)
+
+@app.route('/ajuda', methods=['GET', 'POST'])
+def ajuda():
+    if request.method == 'POST':
+        nome = request.form['nome'].lower()
+        email = request.form['email'].lower()
+        telefone = request.form['telefone'].lower()
+        mensagem = request.form['mensagem'].lower()
+
+        msg = Message(subject='Nova mensagem do sistema de ajuda',
+                      recipients=['grupopiunivespsala6grupo7@gmail.com'],  # E-mail de destino
+                      body=f'Nome: {nome}\nEmail: {email}\nTelefone: {telefone}\n\nMensagem:\n{mensagem}')
+        mail.send(msg)
+
+        flash('Mensagem enviada com sucesso!', 'success')
+        return redirect(url_for('ajuda'))
+    return render_template('pagina_ajuda.html')
+
+
 
 # Carregue a variável de ambiente (instale python-dotenv)
 # from dotenv import load_dotenv
@@ -52,7 +85,7 @@ class Espaco(db.Model):
     __tablename__ = 'agendamento_evento'    
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(50), nullable=False)
-    cpf_morador = db.Column(db.Integer, nullable=False)
+    cpf_morador = db.Column(db.BigInteger, nullable=False)
     data = db.Column(db.DateTime, nullable = False)
     local = db.Column(db.Integer)
     ambientes = db.Column(db.String(50), nullable=False)
@@ -76,29 +109,58 @@ def pagAjuda():
 #Rota para login
 @app.route('/login', methods=['POST'])
 def login():
+    # Verificação do reCAPTCHA
+    recaptcha_response = request.form.get('g-recaptcha-response')
+    
+    if not recaptcha_response:
+        return render_template('login.html', error="Por favor, complete a verificação de segurança (reCAPTCHA)!")
+    
+    # Validar reCAPTCHA com Google
+    data = {
+        'secret': RECAPTCHA_SECRET_KEY,
+        'response': recaptcha_response
+    }
+    
+    try:
+        response = requests.post(GOOGLE_RECAPTCHA_VERIFY_URL, data=data)
+        result = response.json()
+        
+        if not result.get('success'):
+            # Aqui você pode verificar os códigos de erro específicos
+            error_codes = result.get('error-codes', [])
+            print(f"Erros reCAPTCHA: {error_codes}")
+            
+            if 'missing-input-response' in error_codes:
+                error_msg = "Por favor, complete a verificação de segurança."
+            else:
+                error_msg = "Falha na verificação de segurança. Tente novamente."
+            
+            return render_template('login.html', error=error_msg)
+            
+    except Exception as e:
+        print(f"Erro ao validar reCAPTCHA: {e}")
+        return render_template('login.html', error="Erro na verificação de segurança. Tente novamente.")
+    
+    # Resto do código de login...
     usuario = request.form['nomeUsuario'].lower()
     senha = request.form['senhaUsuario']
+    
     if not usuario or not senha:
-        print('1')
         return render_template('login.html', error="Por favor, preencha usuário e senha!")
+    
     user = Usuario.query.filter_by(email=usuario, senha=senha).first()
+    
     if user:
         session['usuario_cpf'] = user.cpf
         session['usuario_nome'] = user.nome
-        session['usuario_apartamento'] = user.apartamento #apresenta o nome do usuário no lado direito da tela
+        session['usuario_apartamento'] = user.apartamento
         session['usuario_admin'] = user.admin
 
-        # Verifica se o usuário é admin
         if user.admin == 'sim':
-            print('2 - Admin')
-            return redirect(url_for('pagina_admin'))  # Redireciona para página de admin
+            return redirect(url_for('pagina_admin'))
         else:
-            print('2 - Usuário normal')
-            return redirect(url_for('pagina_inicial'))  # Redireciona para página normal
-        #print('2')
-        #return redirect(url_for('pagina_inicial')) 
+            return redirect(url_for('pagina_inicial'))
     else:
-        print('3')
         return render_template('login.html', error="Usuário ou senha incorretos!")
 
 #Rota para sucesso do loggin
