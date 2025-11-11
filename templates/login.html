@@ -41,6 +41,12 @@
                             <input type="password" id="senha_usuario" name="senhaUsuario" placeholder="Digite a sua senha" required>
                         </div>
                         <div class="g-recaptcha" data-sitekey="6Lc8SdQrAAAAANjRoYLnJ2gT_MiLONCL3ye1bkTW"></div>
+                        <!-- Mensagem de erro específica para reCAPTCHA -->
+                            {% if error and "reCAPTCHA" in error or "segurança" in error %}
+                            <div style="color: red; font-size: 14px; margin-top: 5px; text-align: center;">
+                                ⚠️ Complete a verificação de segurança acima
+                            </div>
+                            {% endif %}
                         <div class="formulario_botao">
                             <button type="submit" class="formulario_botao_acessar">Acessar</button>
                            <!-- <button type="submit" class="formulario_botao_esqueci"> Esqueci minha senha</button>-->
