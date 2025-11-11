@@ -24,7 +24,7 @@ GOOGLE_RECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify'
 ## Classes do banco de dados
 class Usuario(db.Model):
     __tablename__ = 'moradores'
-    cpf = db.Column(db.Integer, primary_key=True)
+    cpf = db.Column(db.BigInteger, primary_key=True)
     nome = db.Column(db.String(50), nullable=False)
     apartamento = db.Column(db.String(10), nullable=False)
     email = db.Column(db.String(100), nullable=False)
@@ -33,8 +33,8 @@ class Usuario(db.Model):
 
 class Familiar(db.Model):
     __tablename__ = 'visitantes_apartamento'
-    cpf_visitante = db.Column(db.Integer, primary_key=True)
-    cpf_morador = db.Column(db.Integer, db.ForeignKey('moradores.cpf'), nullable=False)
+    cpf_visitante = db.Column(db.BigInteger, primary_key=True)
+    cpf_morador = db.Column(db.BigInteger, db.ForeignKey('moradores.cpf'), nullable=False)
     nome = db.Column(db.String(50), nullable=False)
     apartamento = db.Column(db.String(10), nullable=False)
 
@@ -147,24 +147,55 @@ def cadastrar_familiares():
     error = request.args.get('error')
     return render_template('p_cadastrar_familiares.html', nome=nome_usuario, familiares=familiares , error = error) 
 
-#Rota para adicionar familiar (Funcionando)
-@app.route('/addFamiliar' , methods=['GET','POST'])
+# Rota para adicionar familiar (CORRIGIDA PARA BIGINT)
+@app.route('/addFamiliar', methods=['GET','POST'])
 def adicionarFamiliar():      
     if request.method == 'POST':     
-     form_nome = request.form['nome'].lower()
-     form_cpf = request.form['cpf']
-     form_cpfMorador = session.get('usuario_cpf')
-     form_ap = session.get('usuario_apartamento')     
-     familiar_existente = Familiar.query.filter_by(cpf_visitante=form_cpf).first()    
-     if familiar_existente:
-        return redirect(url_for('cadastrar_familiares', error="CPF Já Cadastrado!"))         
-    if not form_nome:      
-      flash('O título é obrigatório!')
-    else:          
-      familiar = Familiar(nome = form_nome ,cpf_morador = form_cpfMorador ,cpf_visitante = form_cpf , apartamento = form_ap)
-      db.session.add(familiar)
-      db.session.commit()      
-      return redirect(url_for('cadastrar_familiares'))         
+        form_nome = request.form['nome'].lower()
+        form_cpf = request.form['cpf']
+        form_cpfMorador = session.get('usuario_cpf')  # Já deve ser BIGINT da session
+        form_ap = session.get('usuario_apartamento')     
+        
+        # ✅ VALIDAÇÃO: Verificar se CPF tem 11 dígitos ANTES de converter
+        if len(form_cpf) != 11 or not form_cpf.isdigit():
+            flash('CPF deve conter exatamente 11 números!', 'error')
+            return redirect(url_for('cadastrar_familiares'))
+        
+        # ✅ CORREÇÃO: Converter CPF para BIGINT
+        try:
+            cpf_visitante_int = int(form_cpf)  # ✅ Agora funciona com BIGINT
+        except ValueError:
+            flash('CPF do familiar deve conter apenas números!', 'error')
+            return redirect(url_for('cadastrar_familiares'))
+
+        # ✅ VALIDAÇÃO ADICIONAL: Garantir que é um CPF válido
+        if cpf_visitante_int < 10000000000 or cpf_visitante_int > 99999999999:
+            flash('CPF inválido!', 'error')
+            return redirect(url_for('cadastrar_familiares'))
+        
+        # ✅ CORREÇÃO: Usar cpf_visitante_int na consulta
+        familiar_existente = Familiar.query.filter_by(cpf_visitante=cpf_visitante_int).first()    
+        
+        if familiar_existente:
+            flash('CPF já cadastrado!', 'error')
+            return redirect(url_for('cadastrar_familiares'))
+         
+        if not form_nome:      
+            flash('O nome é obrigatório!', 'error')
+            return redirect(url_for('cadastrar_familiares'))
+        else:          
+            # ✅ CORREÇÃO: Usar cpf_visitante_int na criação
+            familiar = Familiar(
+                nome=form_nome,
+                cpf_morador=form_cpfMorador, 
+                cpf_visitante=cpf_visitante_int,  # ✅ AGORA É BIGINT
+                apartamento=form_ap
+            )
+            db.session.add(familiar)
+            db.session.commit()      
+            flash('Familiar adicionado com sucesso!', 'success')
+            return redirect(url_for('cadastrar_familiares'))         
+    
     return render_template('cadastrar_familiares')
 
 #Rota para editar um familiar
@@ -174,7 +205,6 @@ def delete(cpf):
     db.session.delete(familiarExcluido)
     db.session.commit()    
     return redirect(url_for('cadastrar_familiares'))
-
 
 #Rota para página salão de festas
 @app.route('/salaoDeFestas', methods=['GET', 'POST'])
@@ -189,7 +219,7 @@ def salaoDeFestas():
     error = request.args.get('error')
     return render_template('cad_con_salaoF.html', nome=nome_usuario, familiares=familiares, eventos = eventos , todosEventos = todosEventos, error = error) 
 
-### Cadastrar evento salão
+#Rota para cadastro de evento no salão
 @app.route('/cadastro_Salao', methods=['GET', 'POST'])
 def CadEventoSalao():
     nome_usuario = session.get('usuario_nome')
@@ -198,38 +228,41 @@ def CadEventoSalao():
     error = request.args.get('error')
     eventos = Espaco.query.filter_by(cpf_morador=cpf_morador).all()
     todosEventos = Espaco.query.filter(
-    Espaco.ambientes == 'salao de festas',
-    Espaco.data >= datetime.now()
-).order_by(Espaco.data.asc()).all()
+        Espaco.ambientes == 'salao de festas',
+        Espaco.data >= datetime.now()
+    ).order_by(Espaco.data.asc()).all()
 
-    # SE FOR POST (só vai vir do JavaScript)
     if request.method == 'POST':
         try:
-            # Sempre vem como JSON do JavaScript
             dados = request.get_json()
             data_selecionada = dados.get('data_reserva')
-            
-            print(f"🎯 DADOS DO JAVASCRIPT:")
-            print(f"👤 Usuário: {nome_usuario}")
-            print(f" Apartamento: {ap_morador}")
-            print(f"📅 Data: {data_selecionada}")
             
             if data_selecionada:
                 # Converter data
                 data_convertida = data_selecionada.split(' GMT')[0]
                 data_obj = datetime.strptime(data_convertida, '%a %b %d %Y %H:%M:%S')
                 
-                print(f"📅 DATA CONVERTIDA: {data_obj.strftime('%d/%m/%Y')}")
+                # VERIFICAR SE JÁ EXISTE EVENTO NESTA DATA
+                evento_existente = Espaco.query.filter(
+                    Espaco.ambientes == 'salao de festas',
+                    Espaco.data == data_obj
+                ).first()
+                
+                if evento_existente:
+                    return jsonify({
+                        'status': 'error', 
+                        'message': f'Já existe um evento agendado para {data_obj.strftime("%d/%m/%Y")}!'
+                    }), 400
                 
                 # SALVAR NO BANCO
                 novo_evento = Espaco(
-                     nome = nome_usuario,
-                     cpf_morador=cpf_morador,
-                     data=data_obj,
-                     local = 1,
-                     ambientes = 'salao de festas',
-                     apartamento=ap_morador
-                    )
+                    nome=nome_usuario,
+                    cpf_morador=cpf_morador,
+                    data=data_obj,
+                    local=1,
+                    ambientes='salao de festas',
+                    apartamento=ap_morador
+                )
                 
                 db.session.add(novo_evento)
                 db.session.commit()               
@@ -241,20 +274,17 @@ def CadEventoSalao():
                 })
             else:
                 return jsonify({'status': 'error', 'message': 'Data não selecionada'}), 400
-            
                 
         except Exception as e:
             print(f"❌ Erro: {e}")
             return jsonify({'status': 'error', 'message': str(e)}), 400
-            
     
-    # SE FOR GET (mostrar a página)
     return render_template('p_agend_salaoF.html',
                          nome=nome_usuario, 
                          cpf=cpf_morador, 
                          apartamento=ap_morador, 
                          eventos=eventos, 
-                         todosEventos=todosEventos, 
+                         todosEventos=todosEventos,
                          error=error)
 
 ## ROTA PARA DELETAR EVENTO
@@ -274,8 +304,7 @@ def churrasqueira():
     error = request.args.get('error')
     return render_template('cad_con_churrasqueira.html', nome=nome_usuario, familiares=familiares , error = error) 
 
-
-###ROTA PARA CADASTRO DE EVENTO CHURRASQUEIRA
+### ROTA PARA CADASTRO DE EVENTO CHURRASQUEIRA
 @app.route('/cadastro_churrasqueira', methods=['GET', 'POST'])
 def cadEventoChurras():
     nome_usuario = session.get('usuario_nome')
@@ -307,6 +336,38 @@ def cadEventoChurras():
             if data_selecionada:
                 data_convertida = data_selecionada.split(' GMT')[0]
                 data_obj = datetime.strptime(data_convertida, '%a %b %d %Y %H:%M:%S')
+                
+                # 🔥 VERIFICAR SE JÁ EXISTE CHURRASQUEIRA NESTA DATA
+                evento_existente = Espaco.query.filter(
+                    Espaco.ambientes == 'churrasqueira',
+                    Espaco.data == data_obj
+                ).first()
+                
+                if evento_existente:
+                    return jsonify({
+                        'status': 'error', 
+                        'message': f'Já existe uma churrasqueira agendada para {data_obj.strftime("%d/%m/%Y")}!'
+                    }), 400
+                
+                # 🔥 VERIFICAÇÃO OPCIONAL: Usuário já tem churrasqueira agendada?
+                churras_usuario = Espaco.query.filter(
+                    Espaco.ambientes == 'churrasqueira',
+                    Espaco.cpf_morador == cpf_morador,
+                    Espaco.data >= datetime.now()
+                ).first()
+                
+                if churras_usuario:
+                    return jsonify({
+                        'status': 'error', 
+                        'message': 'Você já possui uma churrasqueira agendada!'
+                    }), 400
+                
+                # 🔥 VERIFICAR SE A DATA NÃO É NO PASSADO
+                if data_obj < datetime.now():
+                    return jsonify({
+                        'status': 'error', 
+                        'message': 'Não é possível agendar para datas passadas!'
+                    }), 400
                 
                 # ✅ SALVAR COMO CHURRASQUEIRA
                 novo_evento = Espaco(
@@ -344,7 +405,6 @@ def cadEventoChurras():
                          todosEventos=todosEventos,
                          error=error)
 
-
 ## ROTA PARA DELETAR EVENTO
 @app.route('/evento/<int:id>/deleteChurras', methods=('POST',))
 def deleteEventoChurras(id):   
@@ -359,7 +419,9 @@ def deleteEventoChurras(id):
 def cadastrar_visitantes_Salao(id):
     eventoCarregado = get_eventos(id) 
     convidadosCarregados = get_convidados(id)
-    return render_template('cad_con_salaoF.html', evento = eventoCarregado , convidados = convidadosCarregados)
+    nome = session.get('usuario_nome')
+
+    return render_template('cad_con_salaoF.html', evento = eventoCarregado , convidados = convidadosCarregados , nome=nome)
 
 ## ROTA PARA DELETAR CONVIDADO SALÃO
 @app.route('/<int:id>/deleteConvidadoSalao', methods=('POST',))
@@ -376,8 +438,8 @@ def deleteConvidadoSalao(id):
 def cadastrar_visitantes_Churras(id):
     eventoCarregado = get_eventos(id) 
     convidadosCarregados = get_convidados(id)
-    return render_template('cad_con_churrasqueira.html', evento = eventoCarregado , convidados = convidadosCarregados)
-
+    nome = session.get('usuario_nome')
+    return render_template('cad_con_churrasqueira.html', evento = eventoCarregado , convidados = convidadosCarregados, nome=nome)
 
 ## Rota para adicionar visitantes ao evento
 @app.route('/addVisitanteSalao/<int:id>' , methods=['GET','POST'])
@@ -431,17 +493,10 @@ def adicionarVisitanteChurras(id):
       return redirect(url_for('cadastrar_visitantes_Churras', id = idEvento))         
     return render_template('cad_con_churrasqueira.html')
 
-
-
-
-
-
-## ROTAS ADMIN
 ### ROTA PARA CRIAR USUÁRIOS / MORADORES
 @app.route('/criar', methods=['GET','POST'])
 def cadastrar_usuario():
-    if request.method == 'POST':
-        # Corrigindo os nomes dos campos (devem ser iguais ao "name" no HTML)
+    if request.method == 'POST':        
         form_nome = request.form['nome'].lower()
         form_email = request.form['email'].lower()
         form_cpf = request.form['cpf']
@@ -452,24 +507,41 @@ def cadastrar_usuario():
         # Validações
         if not all([form_nome, form_email, form_cpf, form_ap, form_senha, form_admin]):
             flash('Todos os campos são obrigatórios!', 'error')
-            return render_template('p_cadastrar_morador.html', error="Todos os campos são obrigatórios!")
+            return redirect(url_for('Cadastrar_moradores'))
         
-        # Verificar se CPF já existe
-        usuario_existente = Usuario.query.filter_by(cpf=form_cpf).first()      
+        # ✅ VALIDAÇÃO: Verificar se CPF tem 11 dígitos ANTES de converter
+        if len(form_cpf) != 11 or not form_cpf.isdigit():
+            flash('CPF deve conter exatamente 11 números!', 'error')
+            return redirect(url_for('Cadastrar_moradores'))
+        
+        # Converte CPF para int (BIGINT)
+        try:
+            cpf_int = int(form_cpf)  # ✅ Agora funciona com CPFs grandes
+        except ValueError:
+            flash('CPF deve conter apenas números!', 'error')
+            return redirect(url_for('Cadastrar_moradores'))
+
+        # ✅ VALIDAÇÃO ADICIONAL: Garantir que é um CPF válido (opcional)
+        if cpf_int < 10000000000 or cpf_int > 99999999999:
+            flash('CPF inválido!', 'error')
+            return redirect(url_for('Cadastrar_moradores'))
+
+        # Usar cpf_int na consulta
+        usuario_existente = Usuario.query.filter_by(cpf=cpf_int).first()      
         if usuario_existente:            
             flash('CPF já cadastrado no sistema!', 'error')
-            return render_template('p_cadastrar_morador.html', error="CPF Já Cadastrado!")
+            return redirect(url_for('Cadastrar_moradores'))
         
         # Verificar se email já existe
         email_existente = Usuario.query.filter_by(email=form_email).first()
         if email_existente:
             flash('Email já cadastrado no sistema!', 'error')
-            return render_template('p_cadastrar_morador.html', error="Email Já Cadastrado!")
-
+            return redirect(url_for('Cadastrar_moradores'))
+        
         # Criar novo usuário
         try:
             novo_usuario = Usuario(
-                cpf=form_cpf, 
+                cpf=cpf_int,  # ✅ Agora é BIGINT
                 nome=form_nome, 
                 apartamento=form_ap, 
                 email=form_email, 
@@ -479,13 +551,13 @@ def cadastrar_usuario():
             db.session.add(novo_usuario)
             db.session.commit()
             flash('Usuário cadastrado com sucesso!', 'success')
-            return redirect(url_for('cadastrar_usuario'))  # Corrigido o nome da função
+            return redirect(url_for('Cadastrar_moradores'))
         except Exception as e:
             db.session.rollback()
             flash(f'Erro ao cadastrar usuário: {str(e)}', 'error')
-            return render_template('p_cadastrar_morador.html', error="Erro ao cadastrar usuário")    
+            return redirect(url_for('Cadastrar_moradores'))
     
-    return render_template('p_cadastrar_morador.html')
+    return redirect(url_for('Cadastrar_moradores'))
 
 ### ROTA PARA EXCLUIR USUÁRIOS / MORADORES
 @app.route('/excluir_morador/<int:cpf>', methods=['POST'])
@@ -517,44 +589,74 @@ def excluir_morador(cpf):
     return redirect(url_for('Cadastrar_moradores'))
 
 ## ROTA PARA PESQUISAR ACESSO
-@app.route('/pesquisaNome' , methods=['GET','POST'])
-def pesquisaAcesso():    
+@app.route('/pesquisaNome', methods=['GET','POST'])
+def pesquisaAcesso():
+    nome = session.get('usuario_nome')   
     if request.method == 'POST':
-     form_nome = request.form['nome'].strip().lower()
-     morador = Usuario.query.filter_by(nome = form_nome).all()
-    if morador:
-            tipoDeAcesso = 'Morador'
-            return render_template('pesquisar_acessos.html', pessoa = morador , tipoDePessoa = tipoDeAcesso )
-    else:        
-        convidado = ConvidadoEvento.query.filter_by(nome = form_nome).all()
-    if convidado:        
-        tipoDeAcesso = 'Convidado'
-        convidadoEncontrado = ConvidadoEvento.query.filter_by(nome = form_nome).first()
-        eventoEncontrado = Espaco.query.filter_by(id = convidadoEncontrado.id_agendamento).first()
-        return render_template('pesquisar_acessos.html', pessoa = convidado , tipoDePessoa = tipoDeAcesso , evento = eventoEncontrado)                      
-    else:
-        familiar = Familiar.query.filter_by(nome = form_nome ).all()             
-    if familiar:                
-        tipoDeAcesso = 'Familiar'
-        return render_template('pesquisar_acessos.html', pessoa = familiar , tipoDePessoa = tipoDeAcesso )              
-    return render_template('pesquisar_acessos.html', nome=form_nome)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        form_nome = request.form['nome'].strip().lower() if request.form['nome'] else None
+        form_cpf = request.form['cpf'].strip() if request.form['cpf'] else None
+        
+        # Se ambos os campos estão vazios
+        if not form_nome and not form_cpf:
+            flash('Preencha pelo menos um campo para pesquisar!', 'error')
+            return render_template('pesquisar_acessos.html', nome=nome)
+        
+        # Pesquisa por CPF (tem prioridade)
+        if form_cpf:
+            try:
+                cpf_int = int(form_cpf)
+                
+                # Buscar em Moradores
+                morador = Usuario.query.filter_by(cpf=cpf_int).all()
+                if morador:
+                    tipoDeAcesso = 'Morador'
+                    return render_template('pesquisar_acessos.html', pessoa=morador, tipoDePessoa=tipoDeAcesso)
+                
+                # Buscar em Familiares
+                familiar = Familiar.query.filter_by(cpf_visitante=cpf_int).all()
+                if familiar:
+                    tipoDeAcesso = 'Visitante'
+                    return render_template('pesquisar_acessos.html', pessoa=familiar, tipoDePessoa=tipoDeAcesso)
+                
+                # Buscar em Convidados (CPF é string aqui)
+                convidado = ConvidadoEvento.query.filter_by(cpf=form_cpf).all()
+                if convidado:
+                    tipoDeAcesso = 'Convidado'
+                    convidadoEncontrado = convidado[0] if convidado else None
+                    eventoEncontrado = Espaco.query.filter_by(id=convidadoEncontrado.id_agendamento).first() if convidadoEncontrado else None
+                    return render_template('pesquisar_acessos.html', pessoa=convidado, tipoDePessoa=tipoDeAcesso, evento=eventoEncontrado, nome=nome)
+                    
+            except ValueError:
+                flash('CPF deve conter apenas números!', 'error')
+                return render_template('pesquisar_acessos.html', nome=nome)
+        
+        # Pesquisa por NOME (se CPF não foi preenchido ou não encontrou)
+        if form_nome:
+            # Buscar em Moradores
+            morador = Usuario.query.filter(Usuario.nome.ilike(f'%{form_nome}%')).all()
+            if morador:
+                tipoDeAcesso = 'Morador'
+                return render_template('pesquisar_acessos.html', pessoa=morador, tipoDePessoa=tipoDeAcesso, nome=nome)
+            
+            # Buscar em Convidados
+            convidado = ConvidadoEvento.query.filter(ConvidadoEvento.nome.ilike(f'%{form_nome}%')).all()
+            if convidado:
+                tipoDeAcesso = 'Convidado'
+                convidadoEncontrado = convidado[0] if convidado else None
+                eventoEncontrado = Espaco.query.filter_by(id=convidadoEncontrado.id_agendamento).first() if convidadoEncontrado else None
+                return render_template('pesquisar_acessos.html', pessoa=convidado, tipoDePessoa=tipoDeAcesso, evento=eventoEncontrado, nome=nome)
+            
+            # Buscar em Familiares
+            familiar = Familiar.query.filter(Familiar.nome.ilike(f'%{form_nome}%')).all()
+            if familiar:
+                tipoDeAcesso = 'Visitante'
+                return render_template('pesquisar_acessos.html', pessoa=familiar, tipoDePessoa=tipoDeAcesso, nome=nome)
+        
+        # Se não encontrou nada
+        flash('Nenhum resultado encontrado!', 'error')
+        return render_template('pesquisar_acessos.html', nome=nome)
+    
+    return render_template('pesquisar_acessos.html', nome=nome)
 
 @app.route('/seu-formulario', methods=['GET', 'POST'])
 def handle_form():
@@ -614,8 +716,6 @@ def get_convidado_unico(idConvidado):
     if convidadoUnico is None:
         abort(484)
     return convidadoUnico
-
-
 
 
 

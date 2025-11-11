@@ -139,21 +139,24 @@
                     </thead>
                     <tbody>
                         {% for evento in todosEventos %}
-                        <tr>
+                        <tr>                            
                             <td>{{ evento.nome }}</td>
                             <td>{{ evento.apartamento }}</td>
                             <td>{{ evento.data.strftime('%d/%m/%Y') }}</td>
-                            <td>                                
-                                <a href="{{ url_for('cadastrar_visitantes_Salao', id = evento['id']) }}">
-                                    <img src="/static/imagens/usuarios.png" alt="icone de usuário">
-                                </a>                                
-                                <form action="{{ url_for('deleteEventoSalao', id=evento['id']) }}" method="POST" 
-                                onsubmit="return confirm('Tem certeza que deseja apagar esse evento?')">
-                                <button type="submit" class="btn-excluir" style="background: none; border: none; cursor: pointer;">
-                                <img src="/static/imagens/lixeira.png" alt="imagem de uma lixeira">
-                                </button>
-                            </form>
-                     
+                            <td>          
+                                {% if evento.apartamento == apartamento %}                      
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <a href="{{ url_for('cadastrar_visitantes_Salao', id = evento['id']) }}">
+                                        <img src="/static/imagens/usuarios.png" alt="icone de usuário">
+                                    </a>                                
+                                    <form action="{{ url_for('deleteEventoSalao', id=evento['id']) }}" method="POST" 
+                                        onsubmit="return confirm('Tem certeza que deseja apagar esse evento?')">
+                                        <button type="submit" class="btn-excluir" style="background: none; border: none; cursor: pointer;">
+                                            <img src="/static/imagens/lixeira.png" alt="imagem de uma lixeira">
+                                        </button>
+                                    </form>
+                                </div>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
@@ -177,7 +180,7 @@
             <div class="dados_rodape">
                 <div class="email_rodape">
                     <h3>Email</h3>
-                    <p>email@univesp.com.br</p>
+                    <p>grupopiunivespsala6grupo7@gmail.com</p>
                 </div>
                 <div class="localizacao_rodape">
                     <p>Localização</p>
