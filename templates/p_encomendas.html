@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encomendas - Condo Secure</title>
+    <!-- Reaproveitando o CSS do seu projeto -->
+    <link rel="stylesheet" href="/static/css/p_cadastrar_morador.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .status-pendente { color: #ff9800; font-weight: bold; }
+        .status-retirado { color: #4CAF50; font-weight: bold; }
+        .btn-baixa { background-color: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>    
+    <!-- Bloco de Mensagens de Alerta -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <header>
+        <div class="imagem_cabecalho">
+            <a href="{{ url_for('pagina_admin') }}"><img src="/static/imagens/logo_header.png" alt="Logo"></a>
+        </div>
+        <div class="usuario">
+            <p class="nomeUsuario">{{ nome|title if nome else 'Admin'}}</p>
+            <div class="icone_sair">
+                <a href="{{ url_for('index') }}"><img src="/static/imagens/icone_sair.png" alt="Sair"></a>
+            </div>
+         </div>
+    </header>
+
+    <main>
+        <div class="cadastrarMorador">
+            <!-- Usei o ícone de cadastrar para manter o padrão visual -->
+            <img src="/static/imagens/icone_cadastrar.png" alt="Ícone Encomendas">
+            <h1> Registro de Encomendas</h1>
+        </div>
+
+        <form id="formEncomenda" method="POST">
+            <div class="container_inputs">
+                <div class="campo_nome">
+                    <label for="apartamento"><span class="obrigatorio">*</span> Nº Apartamento</label>
+                    <input type="text" name="apartamento" placeholder="Ex: 101" required>
+                </div>
+
+                <div class="campo_cpf">
+                    <label for="destinatario"><span class="obrigatorio">*</span> Nome do Destinatário</label>
+                    <input type="text" name="destinatario" placeholder="Ex: João Silva" required>
+                </div>
+                
+                <!-- Mantive o container_inputs para o alinhamento ficar igual ao de moradores -->
+            </div>
+
+            <div class="container_3">
+                <div class="informacao">
+                    <p><img src="/static/imagens/icone_informacao.png"> O morador visualizará a chegada no App.</p>
+                </div>
+                <div class="botao">
+                    <button type="submit" class="botao_adicionar">Registrar Chegada</button>
+                </div>
+            </div>
+        </form>
+        
+        <table class="tabela">
+            <thead class="cabeçalho_tabela">
+                <tr>
+                    <th>Data Chegada</th>
+                    <th>Apartamento</th>
+                    <th>Destinatário</th>
+                    <th>Status</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+               {% for enc in encomendas %}
+                <tr>
+                    <td>{{ enc.data_chegada.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>{{ enc.apartamento_destino }}</td>
+                    <td>{{ enc.destinatario }}</td>
+                    <td>
+                        <span class="{{ 'status-pendente' if enc.status == 'Pendente' else 'status-retirado' }}">
+                            {{ enc.status }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if enc.status == 'Pendente' %}
+                        <form action="{{ url_for('retirar_encomenda', id=enc.id) }}" method="POST">
+                            <button type="submit" class="btn-baixa">Dar Baixa</button>
+                        </form>
+                        {% else %}
+                            ---
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+     <footer>
+
+        <div class="rodape">
+            <div class="imagem_rodape">
+                <img src="/static/imagens/logo_rodape.png" alt="Logo da empresa Condo Secure" >
+            </div>
+
+            <div class="dados_rodape">
+                <div class="email_rodape">
+                    <h3>Email</h3>
+                    <p>grupopiunivespsala6grupo7@gmail.com</p>
+                </div>
+                <div class="localizacao_rodape">
+                    <p>Localização</p>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1139.5589665586933!2d-46.66968980722495!3d-23.493745474903747!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94cef78887c5c665%3A0x4b758544ce147597!2sRua%20Jos%C3%A9%20Soriano%20de%20Sousa%2C%20292%20-%20Casa%20Verde%20Alta%2C%20S%C3%A3o%20Paulo%20-%20SP%2C%2002555-050!5e1!3m2!1spt-BR!2sbr!4v1758844960400!5m2!1spt-BR!2sbr" width="auto" height="80" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+
+    </footer>
+</body>
+</html>

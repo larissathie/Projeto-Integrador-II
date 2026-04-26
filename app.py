@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, url_for, flash, session, redirect, jsonify
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 import requests
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
@@ -91,6 +91,26 @@ class Espaco(db.Model):
     ambientes = db.Column(db.String(50), nullable=False)
     apartamento = db.Column(db.String(10), nullable=False)
     convidados = db.relationship('ConvidadoEvento', backref='evento', cascade='all, delete-orphan')
+
+##############################################################################################################
+# Nova classe para Cadastro de Gastos
+class Gasto(db.Model):
+    __tablename__ = 'gastos_condominio'
+    id = db.Column(db.Integer, primary_key=True)
+    descricao = db.Column(db.String(100), nullable=False)
+    valor = db.Column(db.Numeric(10, 2), nullable=False)
+    data_gasto = db.Column(db.Date, nullable=False, default=lambda: datetime.now(timezone.utc))
+    categoria = db.Column(db.String(50)) # Ex: Manutenção, Água, Luz
+
+# Nova classe para Encomendas
+class Encomenda(db.Model):
+    __tablename__ = 'encomendas'
+    id = db.Column(db.Integer, primary_key=True)
+    apartamento_destino = db.Column(db.String(10), nullable=False)
+    destinatario = db.Column(db.String(50), nullable=False)
+    data_chegada = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(20), default='Pendente') # Pendente ou Retirado
+##############################################################################################################
 ## Fim da classe de banco de dados
 
 with app.app_context():
@@ -744,11 +764,158 @@ def handle_form():
         return "Token reCAPTCHA não recebido."
     return render_template('seu_formulario.html') # Renderiza o formulário
 
+
+#################################################################################################################
+###################### ROTA PARA ACESSAR TELA DE CADASTRO DE GASTOS (APENAS PARA ADMIN) ######################
+@app.route('/cadastro_gastos', methods=['GET', 'POST'])
+def cadastro_gastos():
+    # Verificação de segurança: apenas admin acessa
+    if session.get('usuario_admin') != 'sim':
+        flash('Acesso negado! Apenas administradores podem acessar esta página.', 'error')
+        return redirect(url_for('pagina_inicial'))
+
+    if request.method == 'POST':
+        descricao = request.form['descricao']
+        valor = request.form['valor']
+        categoria = request.form['categoria']
+        
+        novo_gasto = Gasto(
+            descricao=descricao,
+            valor=valor,
+            categoria=categoria
+        )
+        db.session.add(novo_gasto)
+        db.session.commit()
+        flash('Gasto cadastrado com sucesso!', 'success')
+        return redirect(url_for('cadastro_gastos'))
+
+    # Busca todos os gastos para listar na tabela abaixo do formulário
+    gastos = Gasto.query.order_by(Gasto.data_gasto.desc()).all()
+    
+    nome_usuario = session.get('usuario_nome')
+    return render_template('p_cadastrar_gastos.html', nome=nome_usuario, gastos=gastos)
+
+# Rota para Excluir Gasto
+@app.route('/excluir_gasto/<int:id>', methods=['POST'])
+def excluir_gasto(id):
+    if session.get('usuario_admin') != 'sim':
+        abort(403)
+    
+    gasto = Gasto.query.get_or_404(id)
+    db.session.delete(gasto)
+    db.session.commit()
+    flash('Gasto excluído com sucesso!', 'success')
+    return redirect(url_for('cadastro_gastos'))
+
+# Rota para Editar Gasto (Processamento)
+@app.route('/editar_gasto/<int:id>', methods=['POST'])
+def editar_gasto(id):
+    if session.get('usuario_admin') != 'sim':
+        abort(403)
+        
+    gasto = Gasto.query.get_or_404(id)
+    gasto.descricao = request.form['descricao']
+    gasto.valor = request.form['valor']
+    gasto.categoria = request.form['categoria']
+    
+    db.session.commit()
+    flash('Gasto atualizado com sucesso!', 'success')
+    return redirect(url_for('cadastro_gastos'))
+
+###################### FIM DA ROTA DE CADASTRO DE GASTOS ######################
+#################################################################################################################
+###################### ROTA PARA ACESSAR TELA DE CHEGADA DE ENCOMENDAS ######################
+@app.route('/encomendas', methods=['GET', 'POST'])
+def encomendas():
+    if session.get('usuario_admin') != 'sim':
+        flash('Acesso negado!', 'error')
+        return redirect(url_for('pagina_inicial'))
+
+    if request.method == 'POST':
+        apartamento = request.form['apartamento']
+        destinatario = request.form['destinatario']
+        
+        nova_encomenda = Encomenda(
+            apartamento_destino=apartamento,
+            destinatario=destinatario,
+            status='Pendente'
+        )
+        db.session.add(nova_encomenda)
+        db.session.commit()
+        flash('Encomenda registrada! O morador será avisado pelo App.', 'success')
+        return redirect(url_for('encomendas'))
+
+    # Filtra para exibir apenas as que estão com status 'Pendente'
+    encomendas_pendentes = Encomenda.query.filter_by(status='Pendente').order_by(Encomenda.data_chegada.desc()).all()
+    
+    nome_usuario = session.get('usuario_nome')
+    # Passamos a lista filtrada para o HTML
+    return render_template('p_encomendas.html', nome=nome_usuario, encomendas=encomendas_pendentes)
+
+# Rota para o morador/admin marcar como "Retirado"
+@app.route('/retirar_encomenda/<int:id>', methods=['POST'])
+def retirar_encomenda(id):
+    encomenda = Encomenda.query.get_or_404(id)
+    encomenda.status = 'Retirado'
+    db.session.commit()
+    flash('Status da encomenda atualizado!', 'success')
+    return redirect(url_for('encomendas'))
+
+###################### FIM DA ROTA DE CADASTRO DE ENCOMENDAS ######################
+
+
 # Rota para sair da página
 @app.route('/logout')
 def logout():
     session.clear()  # limpa a sessão do usuário
     return redirect(url_for('index'))  # volta para a tela de login (que está na rota '/')
+
+##########################################################################################################################
+# --- ROTA DE API PARA GASTOS ---
+
+@app.route('/api/gastos', methods=['GET'])
+def get_gastos():
+    # 1. Buscamos todos os gastos na tabela
+    todos_gastos = Gasto.query.all()
+    
+    # 2. Transformamos os objetos do banco em uma lista de dicionários (JSON)
+    lista_gastos = []
+    for gasto in todos_gastos:
+        lista_gastos.append({
+            'id': gasto.id,
+            'descricao': gasto.descricao,
+            'valor': float(gasto.valor), # Convertemos para float para o JSON aceitar
+            'data': gasto.data_gasto.strftime('%Y-%m-%d'), # Formata a data como texto
+            'categoria': gasto.categoria
+        })
+    
+    # 3. Retornamos a lista em formato JSON
+    return jsonify(lista_gastos)
+
+
+# --- ROTA DE API PARA ENCOMENDAS ---
+@app.route('/api/encomendas/<string:apartamento>', methods=['GET'])
+def api_encomendas(apartamento):
+    # Busca encomendas apenas daquele apartamento que estão pendentes
+    encomendas_morador = Encomenda.query.filter_by(
+        apartamento_destino=apartamento, 
+        status='Pendente'
+    ).all()
+    
+    lista = []
+    for enc in encomendas_morador:
+        lista.append({
+            'id': enc.id,
+            'destinatario': enc.destinatario,
+            'data': enc.data_chegada.strftime('%d/%m/%Y %H:%M')
+        })
+    
+    return jsonify(lista)
+#################################################################################################################
+
+
+
+
 
 ####### FUNÇÕES
 ### FUNÇÃO GET FAMILIAR

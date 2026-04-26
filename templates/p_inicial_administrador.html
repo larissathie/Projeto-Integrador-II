@@ -35,7 +35,8 @@
                         <a href="{{ url_for('cadastrar_familiares') }}">Cadastrar Familiares</a>   
                         <a href="{{ url_for('CadEventoSalao') }}">Salão de Festas</a>  
                         <a href="{{ url_for('cadEventoChurras') }}">Churrasqueira</a>
-                        
+                        <a href="{{ url_for('cadastro_gastos') }}">Gestão de Gastos</a>
+                        <a href="{{ url_for('encomendas') }}">Encomendas</a>
                     </div>
                     </div>
                 </div>
@@ -80,6 +81,34 @@
                 </div>
             </div>
         </div>
+        <!-------------------------------------------------------------------------------------------------------->
+                <!-- Nova linha de containers para Gastos e Encomendas -->
+        <div class="containers" style="margin-top: 20px;">
+            <!-- Container Gestão de Gastos --> 
+            <div class="container_cadastrar_morador">
+                <div class="card_acesso">
+                    <div class="cadastrar_morador">
+                        <h2>Gestão de Gastos</h2>
+                        <!-- Usando o ícone de calendário que você já tem ou um de sua preferência -->
+                        <img src="/static/imagens/icone_gastos.png" alt="Ícone de Gastos">
+                        <a href="{{ url_for('cadastro_gastos') }}">Acessar</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Container Encomendas --> 
+             <div class="container_cadastrar_acessos">
+                <div class="card_acessos">
+                    <div class="cadastrar_acessos">
+                        <h2>Encomendas</h2>
+                        <!-- Usando o ícone de cadastrar para seguir o padrão -->
+                        <img src="/static/imagens/icone_encomenda.png" alt="Ícone de Encomendas">
+                        <a href="{{ url_for('encomendas') }}">Acessar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-------------------------------------------------------------------------------------------------------->
 
         <div class="containers_embaixo">
             <!-- container Familiares --> 

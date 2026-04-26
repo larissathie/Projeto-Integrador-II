@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Gastos - Condo Secure</title>
+    <!-- Reaproveitando o CSS que você já tem -->
+    <link rel="stylesheet" href="/static/css/p_cadastrar_morador.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>    
+    <!-- Bloco de Mensagens de Alerta (Flash) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <header>
+        <div class="imagem_cabecalho">
+            <a href="{{ url_for('pagina_admin') }}"><img src="/static/imagens/logo_header.png" alt="Logo"></a>
+        </div>
+        <div class="usuario">
+            <p class="nomeUsuario">{{ nome|title if nome else 'Admin'}}</p>
+            <div class="icone_sair">
+                <a href="{{ url_for('index') }}"><img src="/static/imagens/icone_sair.png" alt="Sair"></a>
+            </div>
+         </div>
+    </header>
+
+    <main>
+        <div class="cadastrarMorador">
+            <img src="/static/imagens/icone_cadastrar.png" alt="Ícone Gastos">
+            <h1> Gestão de Gastos do Condomínio</h1>
+        </div>
+
+        <form id="formCadastro" method="POST">
+            <div class="container_inputs">
+                <div class="campo_nome">
+                    <label for="descricao"><span class="obrigatorio">*</span> Descrição do Gasto</label>
+                    <input type="text" name="descricao" placeholder="Ex: Conserto Elevador" required>
+                </div>
+
+                <div class="campo_cpf">
+                    <label for="valor"><span class="obrigatorio">*</span> Valor (R$)</label>
+                    <input type="number" step="0.01" name="valor" placeholder="0.00" required>
+                </div>
+
+                <div class="campo_email">
+                    <label for="categoria"><span class="obrigatorio">*</span> Categoria</label>
+                    <select name="categoria" required style="width: 100%; padding: 10px; border-radius: 5px;">
+                        <option value="Manutenção">Manutenção</option>
+                        <option value="Água/Luz">Contas Fixas (Água/Luz)</option>
+                        <option value="Funcionários">Funcionários</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="container_3">
+                <div class="informacao">
+                    <p><img src="/static/imagens/icone_informacao.png"> Cadastre o gasto para acompanhamento dos custos do condomínio.</p>
+                </div>
+                <div class="botao">
+                    <button type="submit" class="botao_adicionar">Salvar Gasto</button>
+                </div>
+            </div>
+        </form>
+        
+        <table class="tabela">
+    <thead class="cabeçalho_tabela">
+        <tr>
+            <th>Data</th>
+            <th>Descrição</th>
+            <th>Categoria</th>
+            <th>Valor</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+       {% for gasto in gastos %}
+        <tr>
+            <td>{{ gasto.data_gasto.strftime('%d/%m/%Y') }}</td>
+            <td>{{ gasto.descricao }}</td>
+            <td>{{ gasto.categoria }}</td>
+            <td>R$ {{ "%.2f"|format(gasto.valor) }}</td>
+            <td style="display: flex; gap: 10px;">
+                <!-- Botão de Editar -->
+                <button onclick="preencherEdicao('{{ gasto.id }}', '{{ gasto.descricao }}', '{{ gasto.valor }}', '{{ gasto.categoria }}')" 
+                        style="background: none; border: none; cursor: pointer;">
+                    <img src="/static/imagens/icone_editar.png" alt="Editar" style="width: 20px;">
+                </button>
+
+                <!-- Botão de Excluir -->
+                <form action="{{ url_for('excluir_gasto', id=gasto.id) }}" method="POST" 
+                      onsubmit="return confirm('Deseja realmente excluir este gasto?')">
+                    <button type="submit" style="background: none; border: none; cursor: pointer;">
+                        <img src="/static/imagens/lixeira.png" alt="Excluir" style="width: 20px;">
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+ <footer>
+
+        <div class="rodape">
+            <div class="imagem_rodape">
+                <img src="/static/imagens/logo_rodape.png" alt="Logo da empresa Condo Secure" >
+            </div>
+
+            <div class="dados_rodape">
+                <div class="email_rodape">
+                    <h3>Email</h3>
+                    <p>grupopiunivespsala6grupo7@gmail.com</p>
+                </div>
+                <div class="localizacao_rodape">
+                    <p>Localização</p>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1139.5589665586933!2d-46.66968980722495!3d-23.493745474903747!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94cef78887c5c665%3A0x4b758544ce147597!2sRua%20Jos%C3%A9%20Soriano%20de%20Sousa%2C%20292%20-%20Casa%20Verde%20Alta%2C%20S%C3%A3o%20Paulo%20-%20SP%2C%2002555-050!5e1!3m2!1spt-BR!2sbr!4v1758844960400!5m2!1spt-BR!2sbr" width="auto" height="80" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+
+    </footer>
+
+    <!-- Script simples para ajudar na edição -->
+    <script>
+    function preencherEdicao(id, desc, valor, cat) {
+        // Muda o comportamento do formulário lá de cima para EDITAR em vez de CRIAR
+        const form = document.getElementById('formCadastro');
+        form.action = '/editar_gasto/' + id;
+        
+        // Preenche os campos com os dados atuais
+        document.getElementsByName('descricao')[0].value = desc;
+        document.getElementsByName('valor')[0].value = valor;
+        document.getElementsByName('categoria')[0].value = cat;
+        
+        // Muda o texto do botão
+        document.querySelector('.botao_adicionar').innerText = "Atualizar Gasto";
+        document.querySelector('.botao_adicionar').style.backgroundColor = "#ff9800"; // Cor de alerta
+    }
+    </script>
+</html>
