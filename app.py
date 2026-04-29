@@ -138,39 +138,39 @@ def pagAjuda():
 #Rota para login
 @app.route('/login', methods=['POST'])
 def login():
-    # Verificação do reCAPTCHA
-   # recaptcha_response = request.form.get('g-recaptcha-response')
+    #Verificação do reCAPTCHA
+    recaptcha_response = request.form.get('g-recaptcha-response')
     
-  #  if not recaptcha_response:
-  #      return render_template('login.html', error="Por favor, complete a verificação de segurança (reCAPTCHA)!")
+    if not recaptcha_response:
+        return render_template('login.html', error="Por favor, complete a verificação de segurança (reCAPTCHA)!")
     
     # Validar reCAPTCHA com Google
- #   data = {
-  #      'secret': RECAPTCHA_SECRET_KEY,
-  #      'response': recaptcha_response
-#   }
+    data = {
+        'secret': RECAPTCHA_SECRET_KEY,
+        'response': recaptcha_response
+   }
     
- #   try:
- #       response = requests.post(GOOGLE_RECAPTCHA_VERIFY_URL, data=data)
- #       result = response.json()
+    try:
+        response = requests.post(GOOGLE_RECAPTCHA_VERIFY_URL, data=data)
+        result = response.json()
         
-  #      if not result.get('success'):
+        if not result.get('success'):
             # Aqui você pode verificar os códigos de erro específicos
- #           error_codes = result.get('error-codes', [])
-  #          print(f"Erros reCAPTCHA: {error_codes}")
+            error_codes = result.get('error-codes', [])
+            print(f"Erros reCAPTCHA: {error_codes}")
             
-  #          if 'missing-input-response' in error_codes:
-   #             error_msg = "Por favor, complete a verificação de segurança."
-   #         else:
-   #             error_msg = "Falha na verificação de segurança. Tente novamente."
+            if 'missing-input-response' in error_codes:
+                error_msg = "Por favor, complete a verificação de segurança."
+            else:
+                error_msg = "Falha na verificação de segurança. Tente novamente."
             
-   #         return render_template('login.html', error=error_msg)
+            return render_template('login.html', error=error_msg)
             
-  #  except Exception as e:
-  #      print(f"Erro ao validar reCAPTCHA: {e}")
-  #      return render_template('login.html', error="Erro na verificação de segurança. Tente novamente.")
+    except Exception as e:
+        print(f"Erro ao validar reCAPTCHA: {e}")
+        return render_template('login.html', error="Erro na verificação de segurança. Tente novamente.")
     
-    # Resto do código de login...
+  
     usuario = request.form['nomeUsuario'].lower()
     senha = request.form['senhaUsuario']
     
