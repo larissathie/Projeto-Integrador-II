@@ -35,7 +35,7 @@
                         <a href="{{ url_for('cadastrar_familiares') }}">Cadastrar Familiares</a>   
                         <a href="{{ url_for('CadEventoSalao') }}">Salão de Festas</a>  
                         <a href="{{ url_for('cadEventoChurras') }}">Churrasqueira</a>
-                        <a href="{{ url_for('cadastro_gastos') }}">Gestão de Gastos</a>
+                        <a href="{{ url_for('gestao_financeira') }}">Gestão de Gastos</a>
                         <a href="{{ url_for('encomendas') }}">Encomendas</a>
                     </div>
                     </div>
@@ -81,7 +81,7 @@
                 </div>
             </div>
         </div>
-        <!-------------------------------------------------------------------------------------------------------->
+       
                 <!-- Nova linha de containers para Gastos e Encomendas -->
         <div class="containers" style="margin-top: 20px;">
             <!-- Container Gestão de Gastos --> 
@@ -91,7 +91,7 @@
                         <h2>Gestão de Gastos</h2>
                         <!-- Usando o ícone de calendário que você já tem ou um de sua preferência -->
                         <img src="/static/imagens/icone_gastos.png" alt="Ícone de Gastos">
-                        <a href="{{ url_for('cadastro_gastos') }}">Acessar</a>
+                        <a href="{{ url_for('gestao_financeira') }}">Gestão de Gastos</a>
                     </div>
                 </div>
             </div>
@@ -107,8 +107,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <!-------------------------------------------------------------------------------------------------------->
+        </div>       
 
         <div class="containers_embaixo">
             <!-- container Familiares --> 
@@ -169,17 +168,16 @@
     </footer>
     
     <script>
-        // Pega o botão e o conteúdo do dropdown
+       
         const dropdownBtn = document.querySelector('.dropdown-btn');
         const dropdownContent = document.querySelector('.dropdown-content');
-
-        // Adiciona um "escutador de evento" que espera por um clique no botão
+        
         dropdownBtn.addEventListener('click', function() {
-          // A cada clique, ele adiciona ou remove a classe 'show' do conteúdo
+         
           dropdownContent.classList.toggle('show');
         });
 
-        // Opcional: Fecha o dropdown se o usuário clicar fora dele
+       
         window.addEventListener('click', function(event) {
           // Verifica se o clique NÃO foi no botão
           if (!dropdownBtn.contains(event.target)) {

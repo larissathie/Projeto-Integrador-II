@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transparência Financeira - Condo Secure</title>
+    <link rel="stylesheet" href="/static/css/p_cadastrar_morador.css">
+    <!-- Link corrigido para os ícones funcionarem -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        /* Alterado para display flex-direction column para empilhar as tabelas */
+        .dashboard-container { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 30px; 
+            padding: 20px; 
+        }
+        .coluna-financeira { 
+            background: #fff; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+        }
+        .painel-resumo { 
+            display: flex; 
+            justify-content: space-around; 
+            background: #fff; 
+            padding: 20px; 
+            margin: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            text-align: center; 
+        }
+        .saldo-positivo { color: #28a745; font-weight: bold; }
+        .saldo-negativo { color: #dc3545; font-weight: bold; }
+        .filtro-secao { 
+            background: #eee; 
+            padding: 15px; 
+            margin: 0 20px; 
+            border-radius: 8px; 
+            display: flex; 
+            gap: 20px; 
+            align-items: center; 
+        }
+        /* Ajuste para a tabela ocupar toda a largura agora que está empilhada */
+        .tabela { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .tabela th, .tabela td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        
+        h2 { margin-bottom: 15px; font-size: 1.4em; color: #444; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="imagem_cabecalho">
+            <a href="{{ url_for('pagina_inicial') }}"><img src="/static/imagens/logo_header.png" alt="Logo"></a>
+        </div>
+        <div class="usuario">
+            <p class="nomeUsuario">{{ nome|title if nome else 'Morador'}}</p>
+            <div class="icone_sair">
+                <a href="{{ url_for('index') }}"><img src="/static/imagens/icone_sair.png" alt="Sair"></a>
+            </div>
+         </div>
+    </header>
+
+    <main>
+        <div class="cadastrarMorador">
+            <i class="fas fa-chart-line" style="font-size: 30px; color: #333;"></i>
+            <h1> Transparência de Contas</h1>
+        </div>
+
+        <form method="GET" action="/financeiro_morador" class="filtro-secao">
+            <label><strong>Verificar mês de referência:</strong></label>
+            <input type="month" name="filtro_mes" onchange="this.form.submit()" value="{{ request.args.get('filtro_mes', '') }}">
+            <small>(Escolha o mês para atualizar o saldo e as listas abaixo)</small>
+        </form>
+
+        <section class="painel-resumo">
+            <div class="card-financeiro">
+                <h3>Total Arrecadado</h3>
+                <p style="color: green; font-size: 1.4em;">R$ {{ "%.2f"|format(total_entradas) }}</p>
+            </div>
+            <div class="card-financeiro">
+                <h3>Total de Gastos</h3>
+                <p style="color: red; font-size: 1.4em;">R$ {{ "%.2f"|format(total_gastos) }}</p>
+            </div>
+            <div class="card-financeiro">
+                <h3>Saldo do Período</h3>
+                <p class="{% if (total_entradas - total_gastos) >= 0 %}saldo-positivo{% else %}saldo-negativo{% endif %}" style="font-size: 1.4em;">
+                    R$ {{ "%.2f"|format(total_entradas - total_gastos) }}
+                </p>
+            </div>
+        </section>
+
+        <div class="dashboard-container">
+            <!-- TABELA DE ENTRADAS EM CIMA -->
+            <div class="coluna-financeira">
+                <h2><i class="fas fa-plus-circle" style="color: green;"></i> Entradas (Receitas do Mês)</h2>
+                <table class="tabela">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entrada in entradas %}
+                        <tr>
+                            <td>{{ entrada.data_entrada.strftime('%d/%m/%Y') }}</td>
+                            <td>{{ entrada.descricao }}</td>
+                            <td>R$ {{ "%.2f"|format(entrada.valor) }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="3" style="text-align: center;">Nenhuma entrada registrada para este período.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TABELA DE SAÍDAS EMBAIXO -->
+            <div class="coluna-financeira">
+                <h2><i class="fas fa-minus-circle" style="color: red;"></i> Saídas (Despesas do Mês)</h2>
+                <table class="tabela">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Descrição</th>
+                            <th>Categoria</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for gasto in gastos %}
+                        <tr>
+                            <td>{{ gasto.data_gasto.strftime('%d/%m/%Y') }}</td>
+                            <td>{{ gasto.descricao }}</td>
+                            <td>{{ gasto.categoria }}</td>
+                            <td>R$ {{ "%.2f"|format(gasto.valor) }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" style="text-align: center;">Nenhum gasto registrado para este período.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

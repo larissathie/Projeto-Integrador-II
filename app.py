@@ -3,6 +3,7 @@ import os
 from datetime import datetime, timezone
 import requests
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import extract
 from flask_mail import Mail, Message
 from werkzeug.exceptions import abort
 from dotenv import load_dotenv
@@ -99,8 +100,16 @@ class Gasto(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     descricao = db.Column(db.String(100), nullable=False)
     valor = db.Column(db.Numeric(10, 2), nullable=False)
-    data_gasto = db.Column(db.Date, nullable=False, default=lambda: datetime.now(timezone.utc))
-    categoria = db.Column(db.String(50)) # Ex: Manutenção, Água, Luz
+    categoria = db.Column(db.String(50))
+    data_gasto  = db.Column(db.Date, nullable=False, default=lambda: datetime.now(timezone.utc).date())
+
+# Nova classe para Cadastro de Entradas
+class Entrada(db.Model):
+    __tablename__ = 'entradas_condominio'
+    id = db.Column(db.Integer, primary_key=True)
+    descricao = db.Column(db.String(100), nullable=False)
+    valor = db.Column(db.Numeric(10, 2), nullable=False)
+    data_entrada = db.Column(db.Date, nullable=False, default=lambda: datetime.now(timezone.utc).date())
 
 # Nova classe para Encomendas
 class Encomenda(db.Model):
@@ -130,36 +139,36 @@ def pagAjuda():
 @app.route('/login', methods=['POST'])
 def login():
     # Verificação do reCAPTCHA
-    recaptcha_response = request.form.get('g-recaptcha-response')
+   # recaptcha_response = request.form.get('g-recaptcha-response')
     
-    if not recaptcha_response:
-        return render_template('login.html', error="Por favor, complete a verificação de segurança (reCAPTCHA)!")
+  #  if not recaptcha_response:
+  #      return render_template('login.html', error="Por favor, complete a verificação de segurança (reCAPTCHA)!")
     
     # Validar reCAPTCHA com Google
-    data = {
-        'secret': RECAPTCHA_SECRET_KEY,
-        'response': recaptcha_response
-    }
+ #   data = {
+  #      'secret': RECAPTCHA_SECRET_KEY,
+  #      'response': recaptcha_response
+#   }
     
-    try:
-        response = requests.post(GOOGLE_RECAPTCHA_VERIFY_URL, data=data)
-        result = response.json()
+ #   try:
+ #       response = requests.post(GOOGLE_RECAPTCHA_VERIFY_URL, data=data)
+ #       result = response.json()
         
-        if not result.get('success'):
+  #      if not result.get('success'):
             # Aqui você pode verificar os códigos de erro específicos
-            error_codes = result.get('error-codes', [])
-            print(f"Erros reCAPTCHA: {error_codes}")
+ #           error_codes = result.get('error-codes', [])
+  #          print(f"Erros reCAPTCHA: {error_codes}")
             
-            if 'missing-input-response' in error_codes:
-                error_msg = "Por favor, complete a verificação de segurança."
-            else:
-                error_msg = "Falha na verificação de segurança. Tente novamente."
+  #          if 'missing-input-response' in error_codes:
+   #             error_msg = "Por favor, complete a verificação de segurança."
+   #         else:
+   #             error_msg = "Falha na verificação de segurança. Tente novamente."
             
-            return render_template('login.html', error=error_msg)
+   #         return render_template('login.html', error=error_msg)
             
-    except Exception as e:
-        print(f"Erro ao validar reCAPTCHA: {e}")
-        return render_template('login.html', error="Erro na verificação de segurança. Tente novamente.")
+  #  except Exception as e:
+  #      print(f"Erro ao validar reCAPTCHA: {e}")
+  #      return render_template('login.html', error="Erro na verificação de segurança. Tente novamente.")
     
     # Resto do código de login...
     usuario = request.form['nomeUsuario'].lower()
@@ -765,35 +774,64 @@ def handle_form():
     return render_template('seu_formulario.html') # Renderiza o formulário
 
 
-#################################################################################################################
-###################### ROTA PARA ACESSAR TELA DE CADASTRO DE GASTOS (APENAS PARA ADMIN) ######################
-@app.route('/cadastro_gastos', methods=['GET', 'POST'])
-def cadastro_gastos():
-    # Verificação de segurança: apenas admin acessa
-    if session.get('usuario_admin') != 'sim':
-        flash('Acesso negado! Apenas administradores podem acessar esta página.', 'error')
-        return redirect(url_for('pagina_inicial'))
-
-    if request.method == 'POST':
-        descricao = request.form['descricao']
-        valor = request.form['valor']
-        categoria = request.form['categoria']
-        
-        novo_gasto = Gasto(
-            descricao=descricao,
-            valor=valor,
-            categoria=categoria
-        )
-        db.session.add(novo_gasto)
-        db.session.commit()
-        flash('Gasto cadastrado com sucesso!', 'success')
-        return redirect(url_for('cadastro_gastos'))
-
-    # Busca todos os gastos para listar na tabela abaixo do formulário
-    gastos = Gasto.query.order_by(Gasto.data_gasto.desc()).all()
+# ROTA PARA ACESSAR TELA DE CADASTRO DE GASTOS (APENAS PARA ADMIN)
+@app.route('/cadastrar_entrada', methods=['POST'])
+def cadastrar_entrada():
+    descricao = request.form.get('descricao')
+    valor = request.form.get('valor')
     
-    nome_usuario = session.get('usuario_nome')
-    return render_template('p_cadastrar_gastos.html', nome=nome_usuario, gastos=gastos)
+    nova_entrada = Entrada(descricao=descricao, valor=valor)
+    db.session.add(nova_entrada)
+    db.session.commit()
+    flash('Entrada registrada!', 'success')
+    return redirect(url_for('gestao_financeira'))
+
+
+
+@app.route('/cadastrar_gasto', methods=['POST'])
+def cadastrar_gasto():
+    descricao = request.form.get('descricao')
+    valor = request.form.get('valor')
+    categoria = request.form.get('categoria')
+    
+    novo_gasto = Gasto(descricao=descricao, valor=valor, categoria=categoria)
+    db.session.add(novo_gasto)
+    db.session.commit()
+    flash('Gasto registrado!', 'success')
+    return redirect(url_for('gestao_financeira'))
+
+@app.route('/gestao_financeira')
+def gestao_financeira():
+    mes_entrada = request.args.get('filtro_entrada')
+    mes_saida = request.args.get('filtro_saida')
+
+    query_entradas = Entrada.query
+    query_gastos = Gasto.query
+
+    # Aplicar filtros
+    if mes_entrada:
+        ano, mes = mes_entrada.split('-')
+        query_entradas = query_entradas.filter(extract('year', Entrada.data_entrada) == int(ano), extract('month', Entrada.data_entrada) == int(mes))
+    
+    if mes_saida:
+        ano, mes = mes_saida.split('-')
+        query_gastos = query_gastos.filter(extract('year', Gasto.data_gasto) == int(ano), extract('month', Gasto.data_gasto) == int(mes))
+
+    # Executa as buscas
+    lista_entradas = query_entradas.all()
+    lista_gastos = query_gastos.all()
+
+    # CÁLCULO DOS TOTAIS    
+    total_entradas = sum(float(e.valor) for e in lista_entradas)
+    total_gastos = sum(float(g.valor) for g in lista_gastos)
+
+    return render_template('p_cadastrar_gastos.html', 
+                           entradas=lista_entradas, 
+                           gastos=lista_gastos,
+                           total_entradas=total_entradas, 
+                           total_gastos=total_gastos,     
+                           nome=session.get('usuario_nome'))
+
 
 # Rota para Excluir Gasto
 @app.route('/excluir_gasto/<int:id>', methods=['POST'])
@@ -805,7 +843,7 @@ def excluir_gasto(id):
     db.session.delete(gasto)
     db.session.commit()
     flash('Gasto excluído com sucesso!', 'success')
-    return redirect(url_for('cadastro_gastos'))
+    return redirect(url_for('gestao_financeira'))
 
 # Rota para Editar Gasto (Processamento)
 @app.route('/editar_gasto/<int:id>', methods=['POST'])
@@ -820,11 +858,35 @@ def editar_gasto(id):
     
     db.session.commit()
     flash('Gasto atualizado com sucesso!', 'success')
-    return redirect(url_for('cadastro_gastos'))
+    return redirect(url_for('gestao_financeira'))
 
-###################### FIM DA ROTA DE CADASTRO DE GASTOS ######################
-#################################################################################################################
-###################### ROTA PARA ACESSAR TELA DE CHEGADA DE ENCOMENDAS ######################
+# Rota para Editar Entrada (Processamento)
+@app.route('/editar_entrada/<int:id>', methods=['POST'])
+def editar_entrada(id):
+    if session.get('usuario_admin') != 'sim':
+        abort(403)
+        
+    entrada = Entrada.query.get_or_404(id)
+    entrada.descricao = request.form['descricao']
+    entrada.valor = request.form['valor']
+    
+    db.session.commit()
+    flash('Receita atualizada com sucesso!', 'success')
+    return redirect(url_for('gestao_financeira'))
+
+# Rota para Excluir Entrada
+@app.route('/excluir_entrada/<int:id>', methods=['POST'])
+def excluir_entrada(id):
+    if session.get('usuario_admin') != 'sim':
+        abort(403)
+    
+    entrada = Entrada.query.get_or_404(id)
+    db.session.delete(entrada)
+    db.session.commit()
+    flash('Receita excluída!', 'success')
+    return redirect(url_for('gestao_financeira'))
+
+# ROTA PARA ACESSAR TELA DE CHEGADA DE ENCOMENDAS
 @app.route('/encomendas', methods=['GET', 'POST'])
 def encomendas():
     if session.get('usuario_admin') != 'sim':
@@ -861,36 +923,83 @@ def retirar_encomenda(id):
     flash('Status da encomenda atualizado!', 'success')
     return redirect(url_for('encomendas'))
 
-###################### FIM DA ROTA DE CADASTRO DE ENCOMENDAS ######################
+# FIM DA ROTA DE CADASTRO DE ENCOMENDAS 
+@app.route('/financeiro_morador')
+def financeiro_morador():
+    # Verifica se o usuário está logado
+    if 'usuario_cpf' not in session:
+        return redirect(url_for('index'))
+
+    mes_referencia = request.args.get('filtro_mes')
+    query_entradas = Entrada.query
+    query_gastos = Gasto.query
+
+    if mes_referencia:
+        ano, mes = mes_referencia.split('-')
+        query_entradas = query_entradas.filter(extract('year', Entrada.data_entrada) == int(ano), extract('month', Entrada.data_entrada) == int(mes))
+        query_gastos = query_gastos.filter(extract('year', Gasto.data_gasto) == int(ano), extract('month', Gasto.data_gasto) == int(mes))
+
+    lista_entradas = query_entradas.order_by(Entrada.data_entrada.desc()).all()
+    lista_gastos = query_gastos.order_by(Gasto.data_gasto.desc()).all()
+
+    total_in = sum(float(e.valor) for e in lista_entradas)
+    total_out = sum(float(g.valor) for g in lista_gastos)
+
+    return render_template('p_financeiro_morador.html', 
+                           entradas=lista_entradas, 
+                           gastos=lista_gastos,
+                           total_entradas=total_in,
+                           total_gastos=total_out,
+                           nome=session.get('usuario_nome'))
+
+## Rota para encomendas
+@app.route('/encomendas_morador')
+def listar_encomendas():
+    if 'usuario_cpf' not in session:
+        return redirect(url_for('index'))
+    
+    # O morador só deve ver as encomendas destinadas ao seu próprio apartamento
+    apartamento_usuario = session.get('usuario_apartamento')
+    
+    # Busca encomendas pendentes e retiradas para aquele apartamento
+    minhas_encomendas = Encomenda.query.filter_by(apartamento_destino=apartamento_usuario).order_by(Encomenda.data_chegada.desc()).all()
+    
+    return render_template('p_encomendas_morador.html', 
+                           encomendas=minhas_encomendas, 
+                           nome=session.get('usuario_nome'))
 
 
 # Rota para sair da página
 @app.route('/logout')
 def logout():
-    session.clear()  # limpa a sessão do usuário
-    return redirect(url_for('index'))  # volta para a tela de login (que está na rota '/')
+    session.clear()  
+    return redirect(url_for('index'))  
 
-##########################################################################################################################
 # --- ROTA DE API PARA GASTOS ---
+@app.route('/api/financeiro/relatorio', methods=['GET'])
+def api_financeiro_relatorio():
+    entradas = Entrada.query.all()
+    gastos = Gasto.query.all()
 
-@app.route('/api/gastos', methods=['GET'])
-def get_gastos():
-    # 1. Buscamos todos os gastos na tabela
-    todos_gastos = Gasto.query.all()
-    
-    # 2. Transformamos os objetos do banco em uma lista de dicionários (JSON)
-    lista_gastos = []
-    for gasto in todos_gastos:
-        lista_gastos.append({
-            'id': gasto.id,
-            'descricao': gasto.descricao,
-            'valor': float(gasto.valor), # Convertemos para float para o JSON aceitar
-            'data': gasto.data_gasto.strftime('%Y-%m-%d'), # Formata a data como texto
-            'categoria': gasto.categoria
-        })
-    
-    # 3. Retornamos a lista em formato JSON
-    return jsonify(lista_gastos)
+    dados_entradas = [
+        {"id": e.id, "descricao": e.descricao, "valor": float(e.valor), "data": e.data_entrada.strftime('%Y-%m-%d')} 
+        for e in entradas
+    ]
+
+    dados_gastos = [
+        {"id": g.id, "descricao": g.descricao, "valor": float(g.valor), "categoria": g.categoria, "data": g.data_gasto.strftime('%Y-%m-%d')} 
+        for g in gastos
+    ]
+
+    return jsonify({
+        "status": "sucesso",
+        "resumo": {
+            "total_entradas": sum(float(e.valor) for e in entradas),
+            "total_saidas": sum(float(g.valor) for g in gastos),
+            "saldo_atual": sum(float(e.valor) for e in entradas) - sum(float(g.valor) for g in gastos)
+        },
+        "detalhes": {"entradas": dados_entradas, "saidas": dados_gastos}
+    })
 
 
 # --- ROTA DE API PARA ENCOMENDAS ---
@@ -911,10 +1020,6 @@ def api_encomendas(apartamento):
         })
     
     return jsonify(lista)
-#################################################################################################################
-
-
-
 
 
 ####### FUNÇÕES

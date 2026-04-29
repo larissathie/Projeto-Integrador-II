@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <style>
+        .status-badge {
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    font-size: 0.85em;
+    }
+    .status-pendente { background-color: #ff9800; } 
+    .status-retirado { background-color: #28a745; } 
+    </style>
+    <head>
+    <meta charset="UTF-8">
+    <title>Minhas Encomendas - Condo Secure</title>
+    <link rel="stylesheet" href="/static/css/p_cadastrar_morador.css">
+</head>
+<body>
+    <header>
+        <div class="imagem_cabecalho">
+            <a href="{{ url_for('pagina_inicial') }}"><img src="/static/imagens/logo_header.png" alt="Logo"></a>
+        </div>
+    </header>
+
+    <main style="padding: 20px;">
+        <h1><i class="fas fa-box"></i> Minhas Encomendas</h1>
+        <p>Abaixo estão as encomendas registradas para o seu apartamento.</p>
+
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th>Data de Chegada</th>
+                    <th>Destinatário</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for enc in encomendas %}
+                <tr>
+                    <td>{{ enc.data_chegada.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>{{ enc.destinatario }}</td>
+                    <td>
+                        <span class="status-badge {{ 'status-pendente' if enc.status == 'Pendente' else 'status-retirado' }}">
+                         {{ enc.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3">Nenhuma encomenda encontrada para seu apartamento.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>

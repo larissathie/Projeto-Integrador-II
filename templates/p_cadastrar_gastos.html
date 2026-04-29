@@ -3,13 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastrar Gastos - Condo Secure</title>
-    <!-- Reaproveitando o CSS que você já tem -->
+    <title>Gestão Financeira - Condo Secure</title>
     <link rel="stylesheet" href="/static/css/p_cadastrar_morador.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* Ajustes para a divisão vertical */
+        .dashboard-container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            align-items: flex-start;
+        }
+        .coluna-financeira {
+            flex: 1;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .titulo-coluna {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .filtro-mes {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9em;
+        }
+        .filtro-mes input {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        /* Ajuste na tabela para caber em telas menores */
+        .tabela { font-size: 0.85em; width: 100%; }
+        .container_inputs { display: flex; flex-direction: column; gap: 10px; }
+        .alert { padding: 10px; margin: 10px; border-radius: 5px; }
+
+
+        .painel-resumo {
+        display: flex;
+        justify-content: space-around;
+        background: #fff;
+        padding: 20px;
+        margin: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    .card-financeiro { flex: 1; }
+    .card-financeiro h3 { font-size: 0.9em; color: #666; margin-bottom: 5px; }
+    .card-financeiro p { font-size: 1.5em; font-weight: bold; }
+    .saldo-positivo { color: #28a745; }
+    .saldo-negativo { color: #dc3545; }
+    .valor-entrada { color: #28a745; }
+    .valor-saida { color: #dc3545; }
+    
+    /* Divisor vertical entre os cards */
+    .divisor { width: 1px; background: #eee; margin: 0 15px; }
+    </style>
 </head>
 <body>    
-    <!-- Bloco de Mensagens de Alerta (Flash) -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -34,115 +94,220 @@
 
     <main>
         <div class="cadastrarMorador">
-            <img src="/static/imagens/icone_cadastrar.png" alt="Ícone Gastos">
-            <h1> Gestão de Gastos do Condomínio</h1>
+            <img src="/static/imagens/icone_cadastrar.png" alt="Ícone Financeiro">
+            <h1> Gestão Financeira do Condomínio</h1>
         </div>
-
-        <form id="formCadastro" method="POST">
-            <div class="container_inputs">
-                <div class="campo_nome">
-                    <label for="descricao"><span class="obrigatorio">*</span> Descrição do Gasto</label>
-                    <input type="text" name="descricao" placeholder="Ex: Conserto Elevador" required>
-                </div>
-
-                <div class="campo_cpf">
-                    <label for="valor"><span class="obrigatorio">*</span> Valor (R$)</label>
-                    <input type="number" step="0.01" name="valor" placeholder="0.00" required>
-                </div>
-
-                <div class="campo_email">
-                    <label for="categoria"><span class="obrigatorio">*</span> Categoria</label>
-                    <select name="categoria" required style="width: 100%; padding: 10px; border-radius: 5px;">
-                        <option value="Manutenção">Manutenção</option>
-                        <option value="Água/Luz">Contas Fixas (Água/Luz)</option>
-                        <option value="Funcionários">Funcionários</option>
-                        <option value="Outros">Outros</option>
-                    </select>
-                </div>
+        <section class="painel-resumo">
+            <div class="card-financeiro">
+                <h3>Total de Entradas</h3>
+                <p class="valor-entrada">R$ {{ "%.2f"|format(total_entradas) }}</p>
             </div>
 
-            <div class="container_3">
-                <div class="informacao">
-                    <p><img src="/static/imagens/icone_informacao.png"> Cadastre o gasto para acompanhamento dos custos do condomínio.</p>
-                </div>
-                <div class="botao">
-                    <button type="submit" class="botao_adicionar">Salvar Gasto</button>
-                </div>
-            </div>
-        </form>
-        
-        <table class="tabela">
-    <thead class="cabeçalho_tabela">
-        <tr>
-            <th>Data</th>
-            <th>Descrição</th>
-            <th>Categoria</th>
-            <th>Valor</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-       {% for gasto in gastos %}
-        <tr>
-            <td>{{ gasto.data_gasto.strftime('%d/%m/%Y') }}</td>
-            <td>{{ gasto.descricao }}</td>
-            <td>{{ gasto.categoria }}</td>
-            <td>R$ {{ "%.2f"|format(gasto.valor) }}</td>
-            <td style="display: flex; gap: 10px;">
-                <!-- Botão de Editar -->
-                <button onclick="preencherEdicao('{{ gasto.id }}', '{{ gasto.descricao }}', '{{ gasto.valor }}', '{{ gasto.categoria }}')" 
-                        style="background: none; border: none; cursor: pointer;">
-                    <img src="/static/imagens/icone_editar.png" alt="Editar" style="width: 20px;">
-                </button>
+            <div class="divisor"></div>
 
-                <!-- Botão de Excluir -->
-                <form action="{{ url_for('excluir_gasto', id=gasto.id) }}" method="POST" 
-                      onsubmit="return confirm('Deseja realmente excluir este gasto?')">
-                    <button type="submit" style="background: none; border: none; cursor: pointer;">
-                        <img src="/static/imagens/lixeira.png" alt="Excluir" style="width: 20px;">
-                    </button>
+            <div class="card-financeiro">
+                <h3>Total de Saídas</h3>
+                <p class="valor-saida">R$ {{ "%.2f"|format(total_gastos) }}</p>
+            </div>
+
+            <div class="divisor"></div>
+
+            <div class="card-financeiro">
+                <h3>Saldo em Caixa</h3>
+                <!-- Lógica de cor: se saldo >= 0 verde, senão vermelho -->
+                <p class="{% if (total_entradas - total_gastos) >= 0 %}saldo-positivo{% else %}saldo-negativo{% endif %}">
+                    R$ {{ "%.2f"|format(total_entradas - total_gastos) }}
+                </p>
+            </div>
+        </section>
+        <div class="dashboard-container">
+            
+            <!-- COLUNA DA ESQUERDA: ENTRADAS -->
+            <div class="coluna-financeira">
+                <div class="titulo-coluna">
+                    <i class="fas fa-arrow-circle-up" style="color: green; font-size: 24px;"></i>
+                    <h2>Entradas (Receitas)</h2>
+                </div>
+
+                <!-- CORREÇÃO NO FILTRO: Usando formulário GET para filtrar a própria página -->
+                <form method="GET" action="/gestao_financeira" class="filtro-mes">
+                    <label>Filtrar por mês:</label>
+                    <input type="month" name="filtro_entrada" onchange="this.form.submit()" value="{{ request.args.get('filtro_entrada', '') }}">
                 </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
- <footer>
 
+                <!-- ACTION CORRETO: Aponta para a rota de criação -->
+                <form id="formEntrada" method="POST" action="/cadastrar_entrada">
+                    <div class="container_inputs">
+                        <label><span class="obrigatorio">*</span> Descrição da Entrada</label>
+                        <input type="text" name="descricao" placeholder="Ex: Condomínio Apto 101" required>
+                        
+                        <label><span class="obrigatorio">*</span> Valor (R$)</label>
+                        <input type="number" step="0.01" name="valor" placeholder="0.00" required>
+                    </div>
+                    <div class="botao" style="margin-top: 10px;">
+                        <button type="submit" class="botao_adicionar" style="background-color: #28a745;">Salvar Entrada</button>
+                    </div>
+                </form>
+
+                <table class="tabela" style="margin-top: 20px;">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Descrição</th>
+                        <th>Valor</th>
+                        <th>Ações</th> <!-- Nova coluna -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entrada in entradas %}
+                    <tr>
+                        <td>{{ entrada.data_entrada.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ entrada.descricao }}</td>
+                        <td>R$ {{ "%.2f"|format(entrada.valor) }}</td>
+                        <td style="display: flex; gap: 10px;">
+                            <!-- Botão Editar Entrada -->
+                            <button onclick="preencherEdicaoEntrada('{{ entrada.id }}', '{{ entrada.descricao }}', '{{ entrada.valor }}')" 
+                                    style="background: none; border: none; cursor: pointer;">
+                                <img src="/static/imagens/icone_editar.png" alt="Editar" style="width: 18px;">
+                            </button>
+
+                            <!-- Botão Excluir Entrada -->
+                            <form action="{{ url_for('excluir_entrada', id=entrada.id) }}" method="POST" 
+                                onsubmit="return confirm('Excluir esta receita?')">
+                                <button type="submit" style="background: none; border: none; cursor: pointer;">
+                                    <img src="/static/imagens/lixeira.png" alt="Excluir" style="width: 18px;">
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            </div>
+
+            <!-- COLUNA DA DIREITA: SAÍDAS -->
+            <div class="coluna-financeira">
+                <div class="titulo-coluna">
+                    <i class="fas fa-arrow-circle-down" style="color: red; font-size: 24px;"></i>
+                    <h2>Saídas (Gastos)</h2>
+                </div>
+
+                <!-- CORREÇÃO NO FILTRO: Usando formulário GET para filtrar a própria página -->
+                <form method="GET" action="/gestao_financeira" class="filtro-mes">
+                    <label>Filtrar por mês:</label>
+                    <input type="month" name="filtro_saida" onchange="this.form.submit()" value="{{ request.args.get('filtro_saida', '') }}">
+                </form>
+
+                <!-- ACTION CORRETO: Aponta para a rota de criação de gastos -->
+                <form id="formGasto" method="POST" action="/cadastrar_gasto">
+                    <div class="container_inputs">
+                        <label><span class="obrigatorio">*</span> Descrição do Gasto</label>
+                        <input type="text" name="descricao" placeholder="Ex: Conserto Elevador" required>
+                        
+                        <label><span class="obrigatorio">*</span> Valor (R$)</label>
+                        <input type="number" step="0.01" name="valor" placeholder="0.00" required>
+
+                        <label><span class="obrigatorio">*</span> Categoria</label>
+                        <select name="categoria" required style="width: 100%; padding: 10px; border-radius: 5px;">
+                            <option value="Manutenção">Manutenção</option>
+                            <option value="Água/Luz">Contas Fixas</option>
+                            <option value="Funcionários">Funcionários</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="botao" style="margin-top: 10px;">
+                        <button type="submit" class="botao_adicionar">Salvar Gasto</button>
+                    </div>
+                </form>
+
+                <table class="tabela" style="margin-top: 20px;">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for gasto in gastos %}
+                        <tr>
+                            <td>{{ gasto.descricao }}</td>
+                            <td>R$ {{ "%.2f"|format(gasto.valor) }}</td>
+                           <td style="display: flex; gap: 10px;">
+                                <!-- Botão de Editar -->
+                                <button onclick="preencherEdicaoGasto('{{ gasto.id }}', '{{ gasto.descricao }}', '{{ gasto.valor }}', '{{ gasto.categoria }}')" 
+                                        style="background: none; border: none; cursor: pointer;">
+                                    <img src="/static/imagens/icone_editar.png" alt="Editar" style="width: 20px;">
+                                </button>
+
+                                <!-- Botão de Excluir -->
+                                <form action="{{ url_for('excluir_gasto', id=gasto.id) }}" method="POST" 
+                                    onsubmit="return confirm('Deseja realmente excluir este gasto?')">
+                                    <button type="submit" style="background: none; border: none; cursor: pointer;">
+                                        <img src="/static/imagens/lixeira.png" alt="Excluir" style="width: 20px;">
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Mantido seu rodapé original -->
         <div class="rodape">
             <div class="imagem_rodape">
                 <img src="/static/imagens/logo_rodape.png" alt="Logo da empresa Condo Secure" >
             </div>
-
             <div class="dados_rodape">
                 <div class="email_rodape">
                     <h3>Email</h3>
                     <p>grupopiunivespsala6grupo7@gmail.com</p>
                 </div>
-                <div class="localizacao_rodape">
-                    <p>Localização</p>
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1139.5589665586933!2d-46.66968980722495!3d-23.493745474903747!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94cef78887c5c665%3A0x4b758544ce147597!2sRua%20Jos%C3%A9%20Soriano%20de%20Sousa%2C%20292%20-%20Casa%20Verde%20Alta%2C%20S%C3%A3o%20Paulo%20-%20SP%2C%2002555-050!5e1!3m2!1spt-BR!2sbr!4v1758844960400!5m2!1spt-BR!2sbr" width="auto" height="80" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                </div>
             </div>
         </div>
-
     </footer>
+        <script>
+            function preencherEdicaoEntrada(id, desc, valor) {
+                const form = document.getElementById('formEntrada');
+                form.action = '/editar_entrada/' + id;
+                
+                // Preenche os campos específicos do formulário de entrada
+                form.querySelector('input[name="descricao"]').value = desc;
+                form.querySelector('input[name="valor"]').value = valor;
+                
+                const btn = form.querySelector('.botao_adicionar');
+                btn.innerText = "Atualizar Receita";
+                btn.style.backgroundColor = "#ff9800";
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
 
-    <!-- Script simples para ajudar na edição -->
-    <script>
-    function preencherEdicao(id, desc, valor, cat) {
-        // Muda o comportamento do formulário lá de cima para EDITAR em vez de CRIAR
-        const form = document.getElementById('formCadastro');
-        form.action = '/editar_gasto/' + id;
-        
-        // Preenche os campos com os dados atuais
-        document.getElementsByName('descricao')[0].value = desc;
-        document.getElementsByName('valor')[0].value = valor;
-        document.getElementsByName('categoria')[0].value = cat;
-        
-        // Muda o texto do botão
-        document.querySelector('.botao_adicionar').innerText = "Atualizar Gasto";
-        document.querySelector('.botao_adicionar').style.backgroundColor = "#ff9800"; // Cor de alerta
-    }
+            function preencherEdicaoGasto(id, desc, valor, cat) {
+                // Localiza o formulário de GASTOS (Saídas)
+                const form = document.getElementById('formGasto');
+                
+                // Altera a rota para a sua função de editar no Python
+                form.action = '/editar_gasto/' + id;
+                
+                // Preenche os campos do formulário com os dados da linha clicada
+                // Usamos o índice do array [1] porque o [0] costuma ser o de Entradas
+                document.getElementsByName('descricao')[1].value = desc;
+                document.getElementsByName('valor')[1].value = valor;
+                document.getElementsByName('categoria')[0].value = cat;
+                
+                // Muda o texto e estilo do botão para o usuário saber que está editando
+                const btn = form.querySelector('.botao_adicionar');
+                btn.innerText = "Atualizar Gasto";
+                btn.style.backgroundColor = "#ff9800"; // Cor laranja para edição
+                
+                // Rola a página para cima para o usuário ver o formulário preenchido
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
     </script>
+</body>
 </html>

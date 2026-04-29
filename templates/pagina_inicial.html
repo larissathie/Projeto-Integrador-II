@@ -4,112 +4,172 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/pagina_inicial.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <title>Página Inicial</title>
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <link href="https://googleapis.com/css2?family=Roboto:wght@100..900&display=swap" rel="stylesheet">
+    <title>Página Inicial - Condo Secure</title>
+    
+    <style>        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5%;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            margin-left: auto; /* Empurra o menu para a direita */
+            margin-right: 20px;
+        }
+
+        .nav-group-left { display: flex; align-items: center; }
+  
+        .containers {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+       
+        .container_familiares, .container_salao_festas, .container_churrasqueira {
+            flex: 0 1 calc(30% - 20px);
+            min-width: 280px;
+        }
+       
+        .container_financeiro, .container_encomendas {
+            flex: 0 1 calc(40% - 20px);
+            min-width: 280px;
+            margin-top: 10px;
+        }
+
+        .card_acesso img, .card_festas img, .card_churrasqueira img {
+            max-width: 70px;
+            margin: 15px auto;
+            display: block;
+        }
+        
+        .separator { margin: 0 15px; color: #ccc; }
+    </style>
 </head>
 <body>
      <header>
-
         <div class="imagem_cabecalho">
             <a href="{{ url_for('pagina_inicial') }}">
-                 <img src="/static/imagens/logo_header.png" alt="Logo da empresa Condo Secure" >
+                 <img src="/static/imagens/logo_header.png" alt="Logo">
             </a>
         </div>
 
+        <!-- MENU DE NAVEGAÇÃO -->
         <nav class="nav-menu">
             <div class="nav-group-left">
                 <div class="dropdown">
                     <button class="dropdown-btn">
-                        <img src="/static/imagens/icone_calendario.png" alt="Ícone de Calendário">
+                        <img src="/static/imagens/icone_calendario.png" alt="Calendário">
                         <span>Agendamentos</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </button>
                     <div class="dropdown-content">
                         <a href="{{ url_for('cadastrar_familiares') }}">Cadastrar Familiares</a>   
                         <a href="{{ url_for('CadEventoSalao') }}">Salão de Festas</a>  
-                        <a href="{{ url_for('cadEventoChurras') }}">churrasqueira</a>                       
+                        <a href="{{ url_for('cadEventoChurras') }}">Churrasqueira</a>                       
                     </div>
                 </div>
+            </div>
             
-        <span class="separator">/</span>
+            <span class="separator">/</span>
 
-        <div class="usuario">
-            <div class="icone_usuario">
-                <img src="/static/imagens/icone_usuario.png" alt="Ícone de Usuário">
-            </div>
-            <p class="nomeUsuario">{{ nome|title if nome else 'Visitante'}}</p>
-            <div class="icone_sair">
-                <a href="{{ url_for('logout') }}" title="Sair">
-                    <img src="/static/imagens/icone_sair.png" alt="Ícone para sair da Página">
-                </a>
-            </div>
-
-         </div>
-
+            <div class="usuario">
+                <div class="icone_usuario">
+                    <img src="/static/imagens/icone_usuario.png" alt="Usuário">
+                </div>
+                <p class="nomeUsuario">{{ nome|title if nome else 'Visitante'}}</p>
+                <div class="icone_sair">
+                    <a href="{{ url_for('index') }}" title="Sair">
+                        <img src="/static/imagens/icone_sair.png" alt="Sair">
+                    </a>
+                </div>
+             </div>
+        </nav>
     </header>
 
     <main>
         <div class="containerSejaBemVindo">
             <div class="containerImagem">
-                <img src="/static/imagens/predio_pagina_inicial.png" alt="Prédios com janelas roxas">
+                <img src="/static/imagens/predio_pagina_inicial.png" alt="Prédio">
             </div>
-
             <div class="containerTexto">
                 <h1>Seja bem-vindo ao Portal do Condomínio!</h1>
-                <p>Agende áreas comuns para seus eventos. </p>
-                <p>Cadastre visitantes e mantenha a segurança de todos.</p> 
-                <p>Segurança para você e para todo o condomínio.</p>
+                <p>Agende áreas comuns para seus eventos.</p>
+                <p>Acompanhe a transparência financeira e suas encomendas.</p> 
             </div>
         </div>
 
         <div class="containers">
-            <!-- container Familiares --> 
+            <!-- LINHA 1 -->
             <div class="container_familiares">
                 <div class="card_acesso">
                     <div class="cadastrar_familiares">
                         <h2>Cadastrar Familiares</h2>
-                        <img src="/static/imagens/icone_familiares.png" alt="Imagem simbolizando uma família">
+                        <img src="/static/imagens/icone_familiares.png" alt="Família">
                         <a href="{{ url_for('cadastrar_familiares') }}">Acessar</a>                       
                     </div>
                 </div>
             </div>
 
-            <!-- container salão de festas --> 
             <div class="container_salao_festas">
                 <div class="card_festas">
                     <div class="cadastrar_visitantes">
                         <h2>Salão de Festas</h2>
-                        <img src="/static/imagens/icone_salao_festas.png" alt="Imagem simbolizando um salão de festas">
+                        <img src="/static/imagens/icone_salao_festas.png" alt="Salão">
                         <a href="{{ url_for('CadEventoSalao') }}">Acessar</a>  
-                       <!-- <a href="p_agend_salaoF.html">Acessar</a>-->
                     </div>
                 </div>
             </div>
-            <!-- container churrasqueira --> 
-             <div class="container_churrasqueira">
+
+            <div class="container_churrasqueira">
                 <div class="card_churrasqueira">
                     <div class="cadastrar_visitantesChurrasqueira">
                         <h2>Churrasqueira</h2>
-                        <img src="/static/imagens/icone_churrasqueira.png" alt="Imagem simbolizando duas pessoas em frente a churrasqueira">
+                        <img src="/static/imagens/icone_churrasqueira.png" alt="Churrasqueira">
                         <a href="{{ url_for('cadEventoChurras') }}">Acessar</a> 
-                       <!-- <a href="p_agend_churrasqueira.html">Acessar</a> --> 
+                    </div>
+                </div>
+            </div>
+
+            <!-- LINHA 2 -->
+            <div class="container_financeiro">
+                <div class="card_acesso">
+                    <div class="cadastrar_familiares">
+                        <h2>Financeiro</h2>
+                        <img src="/static/imagens/icone_gastos.png" alt="Financeiro">
+                        <a href="{{ url_for('financeiro_morador') }}">Acessar</a>                       
+                    </div>
+                </div>
+            </div>
+
+            <div class="container_encomendas">
+                <div class="card_acesso">
+                    <div class="cadastrar_familiares">
+                        <h2>Encomendas</h2>
+                        <img src="/static/imagens/icone_encomenda.png" alt="Encomendas">
+                        <a href="{{ url_for('listar_encomendas') }}">Acessar</a>                       
                     </div>
                 </div>
             </div>
         </div>
-
     </main>
 
     <footer>
-
         <div class="rodape">
             <div class="imagem_rodape">
-                <img src="/static/imagens/logo_rodape.png" alt="Logo da empresa Condo Secure" >
+                <img src="/static/imagens/logo_rodape.png" alt="Logo">
             </div>
-
             <div class="dados_rodape">
                 <div class="email_rodape">
                     <h3>Email</h3>
@@ -117,35 +177,24 @@
                 </div>
                 <div class="localizacao_rodape">
                     <p>Localização</p>
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1139.5589665586933!2d-46.66968980722495!3d-23.493745474903747!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94cef78887c5c665%3A0x4b758544ce147597!2sRua%20Jos%C3%A9%20Soriano%20de%20Sousa%2C%20292%20-%20Casa%20Verde%20Alta%2C%20S%C3%A3o%20Paulo%20-%20SP%2C%2002555-050!5e1!3m2!1spt-BR!2sbr!4v1758844960400!5m2!1spt-BR!2sbr" width="auto" height="80" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <iframe src="https://google.com" width="auto" height="80" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                 </div>
             </div>
         </div>
-
     </footer>
     
     <script>
-        // Pega o botão e o conteúdo do dropdown
         const dropdownBtn = document.querySelector('.dropdown-btn');
         const dropdownContent = document.querySelector('.dropdown-content');
-
-        // Adiciona um "escutador de evento" que espera por um clique no botão
-        dropdownBtn.addEventListener('click', function() {
-          // A cada clique, ele adiciona ou remove a classe 'show' do conteúdo
-          dropdownContent.classList.toggle('show');
-        });
-
-        // Opcional: Fecha o dropdown se o usuário clicar fora dele
-        window.addEventListener('click', function(event) {
-          // Verifica se o clique NÃO foi no botão
-          if (!dropdownBtn.contains(event.target)) {
-            // Se o menu estiver aberto, fecha ele
-            if (dropdownContent.classList.contains('show')) {
-              dropdownContent.classList.remove('show');
+        dropdownBtn.addEventListener('click', () => dropdownContent.classList.toggle('show'));
+        
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropdown-btn') && !event.target.closest('.dropdown-btn')) {
+                if (dropdownContent.classList.contains('show')) {
+                    dropdownContent.classList.remove('show');
+                }
             }
-          }
-        });
+        }
     </script>
-
 </body>
 </html>
