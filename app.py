@@ -8,10 +8,12 @@ from flask_mail import Mail, Message
 from werkzeug.exceptions import abort
 from dotenv import load_dotenv
 from werkzeug.exceptions import abort
+from flask_cors import CORS
 
 load_dotenv()  # Carrega o .env
 
 app = Flask(__name__)
+CORS(app)
 app.config['SECRET_KEY'] = 'your secret key'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")  # string do Neon (com sslmode=require)
 db = SQLAlchemy(app)
