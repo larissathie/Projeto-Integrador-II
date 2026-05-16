@@ -6,3 +6,4 @@ psycopg2-binary==2.9.9; python_version < "3.13"
 python-dotenv==1.0.1
 requests==2.32.3
 Flask-Mail==0.9.1
+flask-cors
